@@ -1,13 +1,16 @@
 import React from "react";
 
-function EventComponent({ num, event: { name, signalName, status, TTS } }) {
+function EventComponent({
+  num,
+  event: { name, signalName, status, TTS, blink, checked },
+}) {
   return (
-    <tr>
-      <td>{num}</td>
-      <td>{name}</td>
-      <td>{signalName}</td>
-      <td>{status}</td>
-      <td>{TTS}</td>
+    <tr className={blink ? "blink" : null}>
+      <td className={checked ? "black" : "red"}>{num}</td>
+      <td className={checked ? "black" : "red"}>{name}</td>
+      <td className={checked ? "black" : "red"}>{signalName}</td>
+      <td className={checked ? "black" : "red"}>{status}</td>
+      <td className={checked ? "black" : "red"}>{TTS}</td>
     </tr>
   );
 }
