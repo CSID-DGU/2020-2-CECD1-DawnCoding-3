@@ -11,7 +11,7 @@ function EventTableComponent() {
       status: "동작중",
       TTS: "able",
       blink: true,
-      checked: false, // 새로운 이벤트(체크 전, 후에 새로운 이벤트 등장하면 전체 checked를 false로 변경해주는 작업 필요)
+      checked: false, // 새로운 이벤트(체크 전, 후에 새로운 이벤트 등장하면 전체 checked를 true로 변경해주는 작업 필요)
     },
     {
       id: 2,
@@ -24,10 +24,46 @@ function EventTableComponent() {
     },
   ]);
 
-  const onClickButton = () => {
+  const onClickStopBtn = () => {
     let newEvents = [...events];
     newEvents.map((event) => (event.blink = false));
     setEvents(newEvents);
+  };
+
+  const onClickNewEventBtn = () => {
+    // Backend로부터 전달받을 event 배열로 바꿔야 함
+    const newEvent = [
+      {
+        id: 1,
+        name: "(154kV 모선 보호)87_B IED Live Status",
+        signalName: "E415_P6065_87_BCFG/DevIDLPHD1$ST$PhyHealth$stVal",
+        status: "닫힘",
+        TTS: "able",
+        blink: true,
+        checked: false,
+      },
+      {
+        id: 2,
+        name: "(154kV 모선 보호)87_B IED Live Status",
+        signalName: "E415_P6065_87_BCFG/DevIDLPHD1$ST$PhyHealth$stVal",
+        status: "안열림",
+        TTS: "able",
+        blink: true,
+        checked: false,
+      },
+    ];
+
+    const beforeEvents = [];
+    events.forEach((event) => {
+      beforeEvents.push({
+        ...event,
+        id: event.id + newEvent.length, // Backend로부터 전달받은 newEvent 개수만큼 id를 더해줌
+        blink: false,
+        checked: true,
+      });
+    });
+    newEvent.forEach((event) => beforeEvents.unshift(event));
+    setEvents(beforeEvents);
   };
 
   return (
@@ -48,8 +84,11 @@ function EventTableComponent() {
           ))}
         </tbody>
       </table>
-      <button className="stopBtn" onClick={onClickButton}>
+      <button className="stopBtn" onClick={onClickStopBtn}>
         멈춤
+      </button>
+      <button className="newEvent" onClick={onClickNewEventBtn}>
+        이벤트 추가
       </button>
     </div>
   );

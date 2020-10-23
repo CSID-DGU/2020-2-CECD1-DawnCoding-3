@@ -11,14 +11,24 @@ td {
 
 .stopBtn {
   position: absolute;
-  top: 85px;
-  right: 50px;
+  top: 0;
   width: 6rem;
   height: 3rem;
-  background-color: rgb(184, 28, 28);
-  color: white;
-  font-size: 1.5rem;
-  border: 0.5px solid black;
+  color: black;
+  background-color: orangered;
+  font-size: 1rem;
+  border: none;
+}
+.newEvent {
+  position: absolute;
+  top: 0;
+  left: 6rem;
+  width: 6rem;
+  height: 3rem;
+  color: black;
+  background-color: cornflowerblue;
+  font-size: 1rem;
+  border: none;
 }
 
 @keyframes blink {
