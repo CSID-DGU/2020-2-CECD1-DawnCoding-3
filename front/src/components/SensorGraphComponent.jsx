@@ -1,17 +1,29 @@
 import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import newEvents from "../modules/newEvents";
+import { useDispatch, useSelector } from "react-redux";
+import { newEvents, fakeAjax } from "../modules/newEvents";
 
 function SensorGraphComponent() {
-  const data = useSelector((state) => state.events);
+  const evnets = useSelector((state) => state.newEventsReducer);
+
   const dispatch = useDispatch();
+  const onClickEvent = (e) => {
+    e.preventDefault();
+    (async () => {
+      try {
+        const result = await fakeAjax();
+        dispatch(newEvents(result));
+      } catch (err) {
+        console.log(err);
+      }
+    })();
+  };
   useEffect(() => {
-    console.log(data);
-    dispatch(newEvents);
-  }, [dispatch]);
+    console.log(evnets);
+  }, [evnets]);
   return (
     <div>
       <h1>sldfkjsdfl</h1>
+      <button onClick={onClickEvent}>sdlfkj</button>
     </div>
   );
 }

@@ -1,5 +1,3 @@
-// import axios from "axios";
-
 const fakeEvents = [
   {
     id: 1,
@@ -39,59 +37,26 @@ const fakeEvents = [
   },
 ];
 
-const fakeAjax = async () => {
+export const fakeAjax = async () => {
   await new Promise((resolve) => setTimeout(resolve, 500));
   return fakeEvents;
 };
 
 // 액션 타입
 const NEW_EVENTS = "NEW_EVENTS";
-const NEW_EVENTS_ERROR = "NEW_EVENTS_ERROR";
-const NEW_EVENTS_SUCCESS = "NEW_EVENTS_SUCCESS";
 
-// thunk 함수
-export const newEvents = () => async (dispatch) => {
-  dispatch({ type: NEW_EVENTS });
-  try {
-    // const events = await axios.get("/events");
-    const events = await fakeAjax();
-    dispatch({ type: NEW_EVENTS_SUCCESS, events });
-  } catch (err) {
-    dispatch({ type: NEW_EVENTS_ERROR, error: err });
-  }
+// 액션 생성 함수
+export const newEvents = (events) => {
+  return { type: NEW_EVENTS, events };
 };
 
 // Initial State
-const initialState = {
-  events: [],
-};
+const initialState = [];
 
 export default function newEventsReducer(state = initialState, action) {
   switch (action.type) {
     case NEW_EVENTS:
-      return {
-        ...state,
-        events: {
-          data: null,
-          error: null,
-        },
-      };
-    case NEW_EVENTS_SUCCESS:
-      return {
-        ...state,
-        events: {
-          data: action.events,
-          error: null,
-        },
-      };
-    case NEW_EVENTS_ERROR:
-      return {
-        ...state,
-        events: {
-          data: null,
-          error: action.error,
-        },
-      };
+      return action.events;
     default:
       return state;
   }

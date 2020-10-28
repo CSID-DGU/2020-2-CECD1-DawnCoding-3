@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import EventComponent from "./EventComponent";
+import SensorGraphComponent from "./SensorGraphComponent";
 import "./EventTableStyle.css";
 
 function EventTableComponent() {
+  const newEvents = useSelector((state) => state.newEventsReducer);
+
   const [events, setEvents] = useState([
     {
       id: 1,
@@ -23,6 +27,10 @@ function EventTableComponent() {
       checked: true, // 기존 이벤트(이미 체크함)
     },
   ]);
+
+  useEffect(() => {
+    console.log(newEvents);
+  }, [newEvents]);
 
   const onClickStopBtn = () => {
     let newEvents = [...events];
@@ -66,6 +74,11 @@ function EventTableComponent() {
   //   setEvents(beforeEvents);
   // };
 
+  const onClickNewEventBtn = (e) => {
+    e.preventDefault();
+    console.log(newEvents);
+  };
+
   return (
     <div>
       <h1 className="eventTableTitle">이벤트 테이블</h1>
@@ -88,9 +101,9 @@ function EventTableComponent() {
       <button className="stopBtn" onClick={onClickStopBtn}>
         멈춤
       </button>
-      {/* <button className="newEvent" onClick={onClickNewEventBtn}>
+      <button className="newEvent" onClick={onClickNewEventBtn}>
         이벤트 추가
-      </button> */}
+      </button>
     </div>
   );
 }
