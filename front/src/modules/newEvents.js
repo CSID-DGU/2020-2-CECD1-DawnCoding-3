@@ -1,4 +1,4 @@
-import axios from "axios";
+// import axios from "axios";
 
 const fakeEvents = [
   {
@@ -54,7 +54,7 @@ export const newEvents = () => async (dispatch) => {
   dispatch({ type: NEW_EVENTS });
   try {
     // const events = await axios.get("/events");
-    const events = await fakeEvents();
+    const events = await fakeAjax();
     dispatch({ type: NEW_EVENTS_SUCCESS, events });
   } catch (err) {
     dispatch({ type: NEW_EVENTS_ERROR, error: err });
