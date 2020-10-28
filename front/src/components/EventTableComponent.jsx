@@ -30,44 +30,45 @@ function EventTableComponent() {
     setEvents(newEvents);
   };
 
-  const onClickNewEventBtn = () => {
-    // Backend로부터 전달받을 event 배열로 바꿔야 함
-    const newEvent = [
-      {
-        id: 1,
-        name: "(154kV 모선 보호)87_B IED Live Status",
-        signalName: "E415_P6065_87_BCFG/DevIDLPHD1$ST$PhyHealth$stVal",
-        status: "닫힘",
-        TTS: "able",
-        blink: true,
-        checked: false,
-      },
-      {
-        id: 2,
-        name: "(154kV 모선 보호)87_B IED Live Status",
-        signalName: "E415_P6065_87_BCFG/DevIDLPHD1$ST$PhyHealth$stVal",
-        status: "안열림",
-        TTS: "able",
-        blink: true,
-        checked: false,
-      },
-    ];
+  // const onClickNewEventBtn = () => {
+  //   // Backend로부터 전달받을 event 배열로 바꿔야 함
+  //   const newEvent = [
+  //     {
+  //       id: 1,
+  //       name: "(154kV 모선 보호)87_B IED Live Status",
+  //       signalName: "E415_P6065_87_BCFG/DevIDLPHD1$ST$PhyHealth$stVal",
+  //       status: "닫힘",
+  //       TTS: "able",
+  //       blink: true,
+  //       checked: false,
+  //     },
+  //     {
+  //       id: 2,
+  //       name: "(154kV 모선 보호)87_B IED Live Status",
+  //       signalName: "E415_P6065_87_BCFG/DevIDLPHD1$ST$PhyHealth$stVal",
+  //       status: "안열림",
+  //       TTS: "able",
+  //       blink: true,
+  //       checked: false,
+  //     },
+  //   ];
 
-    const beforeEvents = [];
-    events.forEach((event) => {
-      beforeEvents.push({
-        ...event,
-        id: event.id + newEvent.length, // Backend로부터 전달받은 newEvent 개수만큼 id를 더해줌
-        blink: false,
-        checked: true,
-      });
-    });
-    newEvent.forEach((event) => beforeEvents.unshift(event));
-    setEvents(beforeEvents);
-  };
+  //   const beforeEvents = [];
+  //   events.forEach((event) => {
+  //     beforeEvents.push({
+  //       ...event,
+  //       id: event.id + newEvent.length, // Backend로부터 전달받은 newEvent 개수만큼 id를 더해줌
+  //       blink: false,
+  //       checked: true,
+  //     });
+  //   });
+  //   newEvent.forEach((event) => beforeEvents.unshift(event));
+  //   setEvents(beforeEvents);
+  // };
 
   return (
     <div>
+      <h1 className="eventTableTitle">이벤트 테이블</h1>
       <table>
         <thead>
           <tr>
@@ -87,9 +88,9 @@ function EventTableComponent() {
       <button className="stopBtn" onClick={onClickStopBtn}>
         멈춤
       </button>
-      <button className="newEvent" onClick={onClickNewEventBtn}>
+      {/* <button className="newEvent" onClick={onClickNewEventBtn}>
         이벤트 추가
-      </button>
+      </button> */}
     </div>
   );
 }

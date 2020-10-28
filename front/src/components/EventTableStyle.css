@@ -12,6 +12,7 @@ td {
 .stopBtn {
   position: absolute;
   top: 0;
+  right: 0;
   width: 6rem;
   height: 3rem;
   color: black;
