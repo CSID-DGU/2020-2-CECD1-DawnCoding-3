@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import EventComponent from "./EventComponent";
 import SensorGraphComponent from "./SensorGraphComponent";
 import "./EventTableStyle.css";
 
 function EventTableComponent() {
-  const dispatch = useDispatch();
   const newEvents = useSelector((state) => state.newEventsReducer);
 
   const [events, setEvents] = useState([
@@ -52,23 +51,26 @@ function EventTableComponent() {
 
   return (
     <div>
-      <h1 className="eventTableTitle">이벤트 테이블</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>Num</th>
-            <th>명칭</th>
-            <th>Signal Name</th>
-            <th>상태</th>
-            <th>TTS</th>
-          </tr>
-        </thead>
-        <tbody>
-          {events.map((event, i) => (
-            <EventComponent key={event.id} event={event} num={i + 1} />
-          ))}
-        </tbody>
-      </table>
+      <h1 className="title">이벤트 테이블</h1>
+      <div className="tableOuter">
+        <table>
+          <thead>
+            <tr>
+              <th>Num</th>
+              <th>명칭</th>
+              <th>Signal Name</th>
+              <th>상태</th>
+              <th>TTS</th>
+            </tr>
+          </thead>
+          <tbody>
+            {events.map((event, i) => (
+              <EventComponent key={event.id} event={event} num={i + 1} />
+            ))}
+          </tbody>
+        </table>
+      </div>
+
       <button className="stopBtn" onClick={onClickStopBtn}>
         멈춤
       </button>

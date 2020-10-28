@@ -19,7 +19,7 @@ function SensorGraphComponent() {
 
   return (
     <div>
-      <h1>센서들</h1>
+      <h1 className="title">센서들</h1>
       <button onClick={onClickEvent}>이벤트 발생시키기</button>
     </div>
   );

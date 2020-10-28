@@ -7,8 +7,15 @@ th,
 td {
   padding: 0;
   border: 1px solid black;
+  border-top: none;
 }
 
+.tableOuter {
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  height: 400px;
+  overflow-y: scroll;
+}
 .stopBtn {
   position: absolute;
   top: 0;
