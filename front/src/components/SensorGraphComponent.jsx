@@ -1,10 +1,8 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { newEvents, fakeAjax } from "../modules/newEvents";
+import React from "react";
+import { useDispatch } from "react-redux";
+import { newEvents, newEventsClear, fakeAjax } from "../modules/newEvents";
 
 function SensorGraphComponent() {
-  const evnets = useSelector((state) => state.newEventsReducer);
-
   const dispatch = useDispatch();
   const onClickEvent = (e) => {
     e.preventDefault();
@@ -16,14 +14,13 @@ function SensorGraphComponent() {
         console.log(err);
       }
     })();
+    dispatch(newEventsClear());
   };
-  useEffect(() => {
-    console.log(evnets);
-  }, [evnets]);
+
   return (
     <div>
-      <h1>sldfkjsdfl</h1>
-      <button onClick={onClickEvent}>sdlfkj</button>
+      <h1>센서들</h1>
+      <button onClick={onClickEvent}>이벤트 발생시키기</button>
     </div>
   );
 }

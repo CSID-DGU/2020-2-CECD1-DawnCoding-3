@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import React, { useState, useEffect, useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import EventComponent from "./EventComponent";
 import SensorGraphComponent from "./SensorGraphComponent";
 import "./EventTableStyle.css";
 
 function EventTableComponent() {
+  const dispatch = useDispatch();
   const newEvents = useSelector((state) => state.newEventsReducer);
 
   const [events, setEvents] = useState([
@@ -28,55 +29,25 @@ function EventTableComponent() {
     },
   ]);
 
+  // 새로운 이벤트 들어오면 화면에 표시
   useEffect(() => {
-    console.log(newEvents);
+    const beforeEvents = [];
+    events.forEach((event) => {
+      beforeEvents.push({
+        ...event,
+        id: event.id + newEvents.length, // Backend로부터 전달받은 newEvent 개수만큼 id를 더해줌
+        blink: false,
+        checked: true,
+      });
+    });
+    newEvents.forEach((event) => beforeEvents.unshift(event));
+    setEvents(beforeEvents);
   }, [newEvents]);
 
   const onClickStopBtn = () => {
     let newEvents = [...events];
     newEvents.map((event) => (event.blink = false));
     setEvents(newEvents);
-  };
-
-  // const onClickNewEventBtn = () => {
-  //   // Backend로부터 전달받을 event 배열로 바꿔야 함
-  //   const newEvent = [
-  //     {
-  //       id: 1,
-  //       name: "(154kV 모선 보호)87_B IED Live Status",
-  //       signalName: "E415_P6065_87_BCFG/DevIDLPHD1$ST$PhyHealth$stVal",
-  //       status: "닫힘",
-  //       TTS: "able",
-  //       blink: true,
-  //       checked: false,
-  //     },
-  //     {
-  //       id: 2,
-  //       name: "(154kV 모선 보호)87_B IED Live Status",
-  //       signalName: "E415_P6065_87_BCFG/DevIDLPHD1$ST$PhyHealth$stVal",
-  //       status: "안열림",
-  //       TTS: "able",
-  //       blink: true,
-  //       checked: false,
-  //     },
-  //   ];
-
-  //   const beforeEvents = [];
-  //   events.forEach((event) => {
-  //     beforeEvents.push({
-  //       ...event,
-  //       id: event.id + newEvent.length, // Backend로부터 전달받은 newEvent 개수만큼 id를 더해줌
-  //       blink: false,
-  //       checked: true,
-  //     });
-  //   });
-  //   newEvent.forEach((event) => beforeEvents.unshift(event));
-  //   setEvents(beforeEvents);
-  // };
-
-  const onClickNewEventBtn = (e) => {
-    e.preventDefault();
-    console.log(newEvents);
   };
 
   return (
@@ -101,9 +72,7 @@ function EventTableComponent() {
       <button className="stopBtn" onClick={onClickStopBtn}>
         멈춤
       </button>
-      <button className="newEvent" onClick={onClickNewEventBtn}>
-        이벤트 추가
-      </button>
+      <SensorGraphComponent />
     </div>
   );
 }

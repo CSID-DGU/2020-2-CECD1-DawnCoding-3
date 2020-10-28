@@ -44,10 +44,14 @@ export const fakeAjax = async () => {
 
 // 액션 타입
 const NEW_EVENTS = "NEW_EVENTS";
+const NEW_EVENTS_CLEAR = "NEW_EVENTS_CLEAR";
 
 // 액션 생성 함수
 export const newEvents = (events) => {
   return { type: NEW_EVENTS, events };
+};
+export const newEventsClear = () => {
+  return { type: NEW_EVENTS_CLEAR };
 };
 
 // Initial State
@@ -57,6 +61,8 @@ export default function newEventsReducer(state = initialState, action) {
   switch (action.type) {
     case NEW_EVENTS:
       return action.events;
+    case NEW_EVENTS_CLEAR:
+      return [];
     default:
       return state;
   }
