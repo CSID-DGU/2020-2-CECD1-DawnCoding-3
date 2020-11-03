@@ -10,7 +10,7 @@ voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[0].id)
 # command = "첫번째 반복"
 # command2 = "두번째 반복"
-commandList = ["첫번째 반복, 두번째 반복"]
+commandList = ["아이", "싯팔"]
 for command in commandList:
     engine.say(command)
     engine.runAndWait()

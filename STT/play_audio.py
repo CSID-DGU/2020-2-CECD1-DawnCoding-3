@@ -1,14 +1,8 @@
-import pyglet
 import sys
 import pygame as pg
 
-# def playSound(soundname):
-#     song = pyglet.media.load(soundname)
-#     song.play()
-#     pyglet.app.run()
-#     pyglet.app.exit()
 
-def playSound(music_file, volume=1):
+def play_music(music_file, volume=0.8):
     # set up the mixer
     freq = 16000    # audio CD quality
     bitsize = -16    # unsigned 16 bit
@@ -41,4 +35,3 @@ def playSound(music_file, volume=1):
 #     # optional volume 0 to 1.0
 #     volume = 0.8
 #     play_music(music_file, volume)
-

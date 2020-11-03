@@ -1,8 +1,8 @@
 from gtts import gTTS
 
 
-def makeSound(a, b, soundname):
-    text = f"{a}가 {b} 되었습니다."
+def makeSound(textList, soundname):
+    text = textList
     tts = gTTS(text=text, lang='ko')
     filename = f"{soundname}.mp3"
     tts.save(filename)
