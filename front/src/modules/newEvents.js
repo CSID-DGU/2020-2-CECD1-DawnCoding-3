@@ -22,7 +22,7 @@ const fakeEvents = [
     name: "b",
     signalName: "b1",
     status: "동작중",
-    TTS: "able",
+    TTS: "disable",
     blink: true,
     checked: false,
   },
@@ -31,15 +31,25 @@ const fakeEvents = [
     name: "b",
     signalName: "b2",
     status: "열림",
-    TTS: "disable",
+    TTS: "able",
     blink: true,
     checked: false,
   },
 ];
 
-export const fakeAjax = async () => {
+export const fakeAjax = async (sensorName, sensorState) => {
   await new Promise((resolve) => setTimeout(resolve, 500));
-  return fakeEvents;
+  let returnEvents = [];
+  const thisIter = ["상태a", "상태b", "상태c"];
+  const iterIndex = thisIter.findIndex((v) => v === sensorState);
+  fakeEvents.forEach((v, i) => {
+    returnEvents.push({
+      ...v,
+      name: sensorName,
+      signalName: thisIter[(iterIndex + i) % 3],
+    });
+  });
+  return returnEvents;
 };
 
 // 액션 타입

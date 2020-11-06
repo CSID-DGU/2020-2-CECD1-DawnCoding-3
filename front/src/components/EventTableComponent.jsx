@@ -8,24 +8,24 @@ function EventTableComponent() {
   const newEvents = useSelector((state) => state.newEventsReducer);
 
   const [events, setEvents] = useState([
-    {
-      id: 1,
-      name: "예시 센서1",
-      signalName: "예시 센서1-시그널1",
-      status: "동작중",
-      TTS: "able",
-      blink: true,
-      checked: false, // 새로운 이벤트(체크 전, 후에 새로운 이벤트 등장하면 전체 checked를 true로 변경해주는 작업 필요)
-    },
-    {
-      id: 2,
-      name: "예시 센서1",
-      signalName: "예시 센서1-시그널2",
-      status: "열림",
-      TTS: "disable",
-      blink: false,
-      checked: true, // 기존 이벤트(이미 체크함)
-    },
+    // {
+    //   id: 1,
+    //   name: "예시 센서1",
+    //   signalName: "예시 센서1-시그널1",
+    //   status: "동작중",
+    //   TTS: "able",
+    //   blink: true,
+    //   checked: false, // 새로운 이벤트(체크 전, 후에 새로운 이벤트 등장하면 전체 checked를 true로 변경해주는 작업 필요)
+    // },
+    // {
+    //   id: 2,
+    //   name: "예시 센서1",
+    //   signalName: "예시 센서1-시그널2",
+    //   status: "열림",
+    //   TTS: "disable",
+    //   blink: false,
+    //   checked: true, // 기존 이벤트(이미 체크함)
+    // },
   ]);
 
   // 새로운 이벤트 들어오면 화면에 표시
