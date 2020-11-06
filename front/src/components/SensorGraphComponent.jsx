@@ -1,26 +1,12 @@
 import React from "react";
-import { useDispatch } from "react-redux";
-import { newEvents, newEventsClear, fakeAjax } from "../modules/newEvents";
+
+import Sensor from "./Sensor";
 
 function SensorGraphComponent() {
-  const dispatch = useDispatch();
-  const onClickEvent = (e) => {
-    e.preventDefault();
-    (async () => {
-      try {
-        const result = await fakeAjax();
-        dispatch(newEvents(result));
-      } catch (err) {
-        console.log(err);
-      }
-    })();
-    dispatch(newEventsClear());
-  };
-
   return (
     <div>
-      <h1 className="title">센서들</h1>
-      <button onClick={onClickEvent}>이벤트 발생시키기</button>
+      <h1 className="title">센서</h1>
+      <Sensor />
     </div>
   );
 }
