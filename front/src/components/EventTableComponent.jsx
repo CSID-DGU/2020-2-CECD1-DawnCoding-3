@@ -62,7 +62,10 @@ function EventTableComponent() {
   }, [newEvents]);
 
   const onClickStopBtn = () => {
-    let newEvents = [...events];
+    let newEvents = [];
+    events.forEach((event) => {
+      newEvents.push({ ...event });
+    });
     newEvents.map((event) => (event.blink = false));
     setEvents(newEvents);
   };
