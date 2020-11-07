@@ -68,7 +68,11 @@ function EventTableComponent() {
           </thead>
           <tbody>
             {events.map((event, i) => (
-              <EventComponent key={event.id} event={event} num={i + 1} />
+              <EventComponent
+                key={`${event.id}${event.status}${new Date()}`}
+                event={event}
+                num={i + 1}
+              />
             ))}
           </tbody>
         </table>
