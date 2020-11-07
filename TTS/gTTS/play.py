@@ -1,12 +1,5 @@
-import pyglet
 import sys
 import pygame as pg
-
-# def playSound(soundname):
-#     song = pyglet.media.load(soundname)
-#     song.play()
-#     pyglet.app.run()
-#     pyglet.app.exit()
 
 def playSound(music_file, volume=1):
     # set up the mixer
@@ -34,11 +27,3 @@ def playSound(music_file, volume=1):
 # pick music file you have in the working folder
 # otherwise give the full file path
 # (try other sound file formats too)
-
-
-# if __name__ == '__main__':
-#     music_file = sys.argv[1]
-#     # optional volume 0 to 1.0
-#     volume = 0.8
-#     play_music(music_file, volume)
-
