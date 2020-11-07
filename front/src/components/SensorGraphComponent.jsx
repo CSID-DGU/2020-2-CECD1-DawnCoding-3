@@ -1,15 +1,23 @@
-import React from "react";
-
+import React, { useEffect, useState } from "react";
 import Sensor from "./Sensor";
+import axios from "axios";
 
 function SensorGraphComponent() {
+  const [devices, setDevices] = useState(null);
+  useEffect(() => {
+    (async () => {
+      const { data } = await axios.get("/devices");
+      setDevices(data);
+    })();
+  }, []);
   return (
     <div>
-      <h1 className="title">센서</h1>
-      <Sensor sensorName={"센서A"} sensorStates={["상태a", "상태b", "상태c"]} />
-      <br />
-      <br />
-      <Sensor sensorName={"센서B"} sensorStates={["상태a", "상태b", "상태c"]} />
+      <h1 className="title">Devices</h1>
+      {devices &&
+        devices.map(
+          (device) =>
+            device && <Sensor deviceInfo={device} key={device.deviceId} />
+        )}
     </div>
   );
 }
