@@ -3,3 +3,9 @@ dataset/adsads.xlsm
 dataset/data2.xlsx
 .ipynb_checkpoints/Untitled-checkpoint.ipynb
 TTS/pyttsx/
+TTS/gTTS/__pycache__/make.cpython-36.pyc
+TTS/gTTS/__pycache__/make.cpython-38.pyc
+TTS/gTTS/__pycache__/play.cpython-36.pyc
+TTS/gTTS/__pycache__/sapi.cpython-38.pyc
+.vscode/settings.json
+TTS/gTTS/__pycache__/gtts.cpython-38.pyc
