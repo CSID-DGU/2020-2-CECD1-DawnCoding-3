@@ -1,7 +1,9 @@
 import win32com.client
+import sys
 # import time
 
 # start = time.time()
+message = sys.argv[1]
 tts = win32com.client.Dispatch("SAPI.SpVoice")
-tts.Speak("새벽코딩 어서오고")
+tts.Speak(message)
 # print("time :", time.time() - start)
