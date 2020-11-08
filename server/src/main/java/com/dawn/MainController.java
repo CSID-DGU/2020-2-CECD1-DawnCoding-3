@@ -11,8 +11,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 @RestController
@@ -101,8 +103,25 @@ public class MainController {
     }
 
     @GetMapping("/devices")
-    public ResponseEntity<List<Device>> getDevices() throws IOException {
+    public ResponseEntity<List<Device>> getDevices() throws IOException, InterruptedException {
         List<Device> devices = deviceRepository.findAll();
+
+        Runtime rt = Runtime.getRuntime();
+        Process pc = null;
+        try {
+            pc = rt.exec("python C:\\Users\\4whom\\Desktop\\2020-2학기\\종설\\project\\TTS\\gTTS\\sapi.py \"hello dawn coding\"");
+
+            BufferedReader stdin = new BufferedReader(new InputStreamReader(pc.getInputStream()));
+            String s = null;
+            while ((s = stdin.readLine()) != null) {
+                System.out.print(s);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+                pc.waitFor();
+                pc.destroy();
+        }
         return new ResponseEntity<>(devices, HttpStatus.OK);
     }
 
