@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import EventComponent from "./EventComponent";
 import SensorGraphComponent from "./SensorGraphComponent";
+import { v4 as uuid } from "uuid";
 import "./EventTableStyle.css";
 
 function EventTableComponent() {
@@ -69,7 +70,7 @@ function EventTableComponent() {
           <tbody>
             {events.map((event, i) => (
               <EventComponent
-                key={`${event.id}${event.status}${new Date()}`}
+                key={`${event.id}${event.status}${uuid()}`}
                 event={event}
                 num={i + 1}
               />
