@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { Button } from "react-bootstrap";
 import EventComponent from "./EventComponent";
 import SensorGraphComponent from "./SensorGraphComponent";
 import { v4 as uuid } from "uuid";
@@ -79,9 +80,9 @@ function EventTableComponent() {
         </table>
       </div>
 
-      <button className="stopBtn" onClick={onClickStopBtn}>
+      <Button className="stopBtn" variant="danger" onClick={onClickStopBtn}>
         멈춤
-      </button>
+      </Button>
       <SensorGraphComponent />
     </div>
   );
