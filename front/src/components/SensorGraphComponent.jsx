@@ -70,33 +70,46 @@ function SensorGraphComponent() {
   };
 
   const onClickEvent = () => {
-    (async () => {
-      try {
-        const sendData = {
-          deviceId: selectedDevice.deviceId,
-          currentStatusCode: selectedStatus.code,
-          tts: selectedDevice.tts,
-        };
-        const { data } = await axios.put("/device", sendData);
-        let beforeData = [];
-        beforeData.push(data);
-        let result = [];
-        beforeData.forEach((v) => {
-          result.push({
-            id: v.deviceId,
-            name: v.deviceName,
-            signalName: v.signalName,
-            status: v.statuses[v.currentStatusCode],
-            TTS: `${v.tts}`,
+    const sendData = [];
+    const theData = {
+      deviceId: selectedDevice.deviceId,
+      currentStatusCode: selectedStatus.code,
+      tts: selectedDevice.tts,
+    };
+    sendData.push(theData);
+    const moreEventsNumber = 2 + Math.floor(Math.random() * 2);
+    Array(moreEventsNumber)
+      .fill()
+      .forEach((v, i) => {
+        const moreEventDevice = devices.find(
+          (device) =>
+            device.deviceId === ((theData.deviceId + i) % devices.length) + 1
+        );
+        sendData.push({
+          deviceId: moreEventDevice.deviceId,
+          currentStatusCode:
+            (moreEventDevice.currentStatusCode + 1) %
+            Object.keys(moreEventDevice.statuses).length,
+          tts: moreEventDevice.tts,
+        });
+      });
+    Promise.all(sendData.map((data) => axios.put("/device", data)))
+      .then((result) => {
+        result = result.map((inner) => {
+          return {
+            id: inner.data.deviceId,
+            name: inner.data.deviceName,
+            signalName: inner.data.signalName,
+            status: inner.data.statuses[inner.data.currentStatusCode],
+            TTS: `${inner.data.tts}`,
             blink: true,
             checked: false,
-          });
+          };
         });
         dispatch(newEvents(result));
-      } catch (err) {
-        console.log(err);
-      }
-    })();
+      })
+      .catch((err) => console.log(err));
+
     // const theDevice = devices.findIndex(
     //   (v) => v.deviceId === selectedDevice.deviceId
     // );
