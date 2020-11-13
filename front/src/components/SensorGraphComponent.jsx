@@ -72,11 +72,13 @@ function SensorGraphComponent() {
   const onClickEvent = () => {
     const sendData = [];
     const theData = {
+      // timestamp : Date.now(),
       deviceId: selectedDevice.deviceId,
       currentStatusCode: selectedStatus.code,
       tts: selectedDevice.tts,
     };
     sendData.push(theData);
+    // 총 3~4개 센서의 상태가 한 번에 변함
     const moreEventsNumber = 2 + Math.floor(Math.random() * 2);
     Array(moreEventsNumber)
       .fill()
@@ -86,6 +88,7 @@ function SensorGraphComponent() {
             device.deviceId === ((theData.deviceId + i) % devices.length) + 1
         );
         sendData.push({
+          // timestamp : Date.now(),
           deviceId: moreEventDevice.deviceId,
           currentStatusCode:
             (moreEventDevice.currentStatusCode + 1) %
@@ -93,39 +96,37 @@ function SensorGraphComponent() {
           tts: moreEventDevice.tts,
         });
       });
+
+    // 각각 변한 데이터를 put 요청
     Promise.all(sendData.map((data) => axios.put("/device", data)))
       .then((result) => {
         result = result.map((inner) => {
           return {
+            // timestamp : inner.어쩌고저쩌고
             id: inner.data.deviceId,
             name: inner.data.deviceName,
             signalName: inner.data.signalName,
             status: inner.data.statuses[inner.data.currentStatusCode],
+            statusCode: inner.data.currentStatusCode,
             TTS: `${inner.data.tts}`,
             blink: true,
             checked: false,
           };
         });
         dispatch(newEvents(result));
+        // 실제 디바이스의 상태들도 변경
+        const newDevices = [];
+        devices.forEach((v) => {
+          newDevices.push({ ...v });
+        });
+        result.forEach((device) => {
+          const theIndex = devices.findIndex((v) => v.deviceId === device.id);
+          newDevices[theIndex].currentStatusCode = device.statusCode;
+          newDevices[theIndex].currentStatusTitle = device.status;
+        });
+        setDevices(newDevices);
       })
       .catch((err) => console.log(err));
-
-    // const theDevice = devices.findIndex(
-    //   (v) => v.deviceId === selectedDevice.deviceId
-    // );
-    // let newDevices = [];
-    // devices.forEach((device, i) => {
-    //   if (i !== theDevice) {
-    //     newDevices.push(device);
-    //   } else {
-    //     newDevices.push({
-    //       ...device,
-    //       currentStatusCode: selectedStatus.code,
-    //       currentStatusTitle: selectedStatus.Title,
-    //     });
-    //   }
-    // });
-    // setDevices(newDevices);
     onClickClose();
     setSelectedDevice({
       deviceId: "",

@@ -36,6 +36,7 @@ function EventTableComponent() {
     events.forEach((event) => {
       beforeEvents.push({
         ...event,
+        // timestamp,
         id: event.id + newEvents.length, // Backend로부터 전달받은 newEvent 개수만큼 id를 더해줌
         blink: false,
         checked: true,
