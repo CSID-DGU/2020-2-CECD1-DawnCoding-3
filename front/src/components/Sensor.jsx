@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Button } from "react-bootstrap";
 import { newEvents, newEventsClear } from "../modules/newEvents";
-import "./SensorStyle.css";
 import axios from "axios";
 
 const sensorTheme = [
@@ -62,7 +61,9 @@ function Sensor({ deviceInfo, handleShow, index }) {
   };
 
   return (
-    <Button variant={sensorTheme[index]}>{deviceInfo.deviceName}</Button>
+    <Button variant={sensorTheme[index]} onClick={handleShow}>
+      {deviceInfo.deviceName}
+    </Button>
     // <div id="sensor">
     //   <div id="sensorName">{deviceInfo.deviceName}</div>
     //   <select id="state" onChange={onChangeSensorState}>
