@@ -150,11 +150,11 @@ def listen_print_loop(responses):
             num_chars_printed = len(transcript)
 
         else:
-            print(transcript + overwrite_chars)
-
+            # print(transcript + overwrite_chars)
+            return (transcript + overwrite_chars)
             # Exit recognition if any of the transcribed phrases could be
             # one of our keywords.
-            if re.search(r"\b(exit|quit)\b", transcript, re.I):
+            if re.search(r"\b(exit|quit|종료)\b", transcript, re.I):
                 print("Exiting..")
                 break
 
@@ -186,7 +186,8 @@ def main():
         responses = client.streaming_recognize(streaming_config, requests)
 
         # Now, put the transcription responses to use.
-        listen_print_loop(responses)
+        command = listen_print_loop(responses)
+        print("내 명령어: ", command)
 
 
 if __name__ == "__main__":
