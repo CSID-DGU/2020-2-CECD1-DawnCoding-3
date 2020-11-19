@@ -70,9 +70,10 @@ function SensorGraphComponent() {
   };
 
   const onClickEvent = () => {
+    const theDate = new Date();
     const sendData = [];
     const theData = {
-      // timestamp : Date.now(),
+      createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${theDate.getMilliseconds()}`,
       deviceId: selectedDevice.deviceId,
       currentStatusCode: selectedStatus.code,
       tts: selectedDevice.tts,
@@ -87,8 +88,11 @@ function SensorGraphComponent() {
           (device) =>
             device.deviceId === ((theData.deviceId + i) % devices.length) + 1
         );
+        const theDate = new Date();
         sendData.push({
-          // timestamp : Date.now(),
+          createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${
+            theDate.getMilliseconds() + Math.floor(Math.random() * 10)
+          }`,
           deviceId: moreEventDevice.deviceId,
           currentStatusCode:
             (moreEventDevice.currentStatusCode + 1) %
@@ -100,9 +104,10 @@ function SensorGraphComponent() {
     // 각각 변한 데이터를 put 요청
     Promise.all(sendData.map((data) => axios.put("/device", data)))
       .then((result) => {
-        result = result.map((inner) => {
+        result = result.map((inner, i) => {
           return {
             // timestamp : inner.어쩌고저쩌고
+            createDate: sendData[i].createDate,
             id: inner.data.deviceId,
             name: inner.data.deviceName,
             signalName: inner.data.signalName,
