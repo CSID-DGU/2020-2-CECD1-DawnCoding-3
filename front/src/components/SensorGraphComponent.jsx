@@ -78,7 +78,7 @@ function SensorGraphComponent() {
       createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${theDate.getMilliseconds()}`,
       deviceId: selectedDevice.deviceId,
       currentStatusCode: selectedStatus.code,
-      tts: selectedDevice.tts,
+      tts: false,
     };
     sendData.push(theData);
     // 총 3~4개 센서의 상태가 한 번에 변함

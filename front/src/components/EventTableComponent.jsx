@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Form } from "react-bootstrap";
 import EventComponent from "./EventComponent";
@@ -6,11 +7,13 @@ import SensorGraphComponent from "./SensorGraphComponent";
 import { v4 as uuid } from "uuid";
 import "./EventTableStyle.css";
 import { newEvents as newEventAction } from "../modules/newEvents";
+import { updateDevices } from "../modules/devices";
 
 function EventTableComponent() {
   const dispatch = useDispatch();
   const newEvents = useSelector((state) => state.newEventsReducer);
-  const theInterval = useRef(null);
+  const devices = useSelector((state) => state.devicesReducer);
+  const theSetTimeout = useRef(null);
 
   const [events, setEvents] = useState([]);
   const [watchMode, setWatchMode] = useState(false);
@@ -34,17 +37,18 @@ function EventTableComponent() {
     if (watchMode) {
       // watch 모드이면 감시 이벤트 발생
       const theTimeSeed = Math.floor(Math.random() * 2) + 4;
-      theInterval.current = makeEventInterval(theTimeSeed);
+      theSetTimeout.current = makeSetTimeOut(theTimeSeed);
     } else {
       // watch 모드 아니면 이벤트 발생 중지
-      if (theInterval.current) {
-        clearInterval(theInterval.current);
+      if (theSetTimeout.current) {
+        clearTimeout(theSetTimeout.current);
+        theSetTimeout.current = null;
       }
     }
   }, [watchMode]);
 
-  const makeEventInterval = (theTimeSeed) => {
-    setInterval(() => {
+  const makeSetTimeOut = (theTimeSeed) => {
+    setTimeout(() => {
       const isAnalog = Math.random() >= 0.5 ? true : false;
       if (isAnalog) {
         // 아날로그 데이터 -> 상한치/하한치를 랜덤하게 선택해서 해당 센서가 상한치/하한치 배열 안에 있다면 복귀 이벤트 발생, 아니면 초과 이벤트 발생
@@ -63,10 +67,65 @@ function EventTableComponent() {
         };
         dispatch(newEventAction([sendingData]));
       } else {
+        // 상태 데이터의 감시 이벤트 발생
+        const theSelectedIndex = Math.floor(Math.random() * devices.length);
+        const theDate = new Date();
+        const selectedDevice = {
+          createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${theDate.getMilliseconds()}`,
+          deviceId: devices[theSelectedIndex].deviceId,
+          currentStatusCode: devices[theSelectedIndex].code,
+          tts: devices[theSelectedIndex].tts,
+        };
+        const sendData = [selectedDevice];
+        // 총 4~5개의 센서 상태가 한 번에 변함
+        const moreEventsNumber = 2 + Math.floor(Math.random() * 3);
+        Array(moreEventsNumber)
+          .fill()
+          .forEach((v, i) => {
+            const moreEventDevice = devices.find(
+              (device) =>
+                device.deviceId ===
+                ((selectedDevice.deviceId + i) % devices.length) + 1
+            );
+            const theDate = new Date();
+            sendData.push({
+              createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${
+                theDate.getMilliseconds() + Math.floor(Math.random() * 10)
+              }`,
+              deviceId: moreEventDevice.deviceId,
+              currentStatusCode:
+                (moreEventDevice.currentStatusCode + 1) %
+                Object.keys(moreEventDevice.statuses).length,
+              tts: moreEventDevice.tts,
+            });
+          });
+        // 각각 변한 데이터를 put 요청
+        Promise.all(sendData.map((data) => axios.put("/device", data)))
+          .then((result) => {
+            result = result.map((inner, i) => {
+              return {
+                // timestamp : inner.어쩌고저쩌고
+                createDate: sendData[i].createDate,
+                id: inner.data.deviceId,
+                name: inner.data.deviceName,
+                signalName: inner.data.signalName,
+                status: inner.data.statuses[inner.data.currentStatusCode],
+                statusCode: inner.data.currentStatusCode,
+                TTS: `${inner.data.tts}`,
+                blink: true,
+                checked: false,
+              };
+            });
+            dispatch(newEventAction(result));
+            // 실제 디바이스의 상태들도 변경
+            dispatch(updateDevices(result));
+          })
+          .catch((err) => console.log(err));
       }
       // 우선 이벤트 발생 되면 서버에 이벤트 기록하고 감시 이벤트 발생을 중지
-      // 감시 이벤트에서 TTS 읽어주기가 끝나면 다시 setInterval 실행
-      clearInterval(theInterval.current);
+      // 감시 이벤트에서 TTS 읽어주기가 끝나면 다시 setTimeout 실행
+      const theTimeSeed = Math.floor(Math.random() * 2) + 4;
+      theSetTimeout.current = makeSetTimeOut(theTimeSeed);
     }, theTimeSeed * 1000);
   };
 
