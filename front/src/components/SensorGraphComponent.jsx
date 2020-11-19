@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { newEvents } from "../modules/newEvents";
+import { updateDevices, initDevices } from "../modules/devices";
 import "./SensorStyle.css";
 
 import axios from "axios";
@@ -17,8 +18,8 @@ const sensorTheme = [
 
 function SensorGraphComponent() {
   const dispatch = useDispatch();
+  const devices = useSelector((state) => state.devicesReducer);
 
-  const [devices, setDevices] = useState(null);
   const [show, setShow] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState({
     deviceId: "",
@@ -37,12 +38,13 @@ function SensorGraphComponent() {
     (async () => {
       const { data } = await axios.get("/devices");
       // console.log(data);
-      setDevices(data);
+      dispatch(initDevices(data));
     })();
   }, []);
 
   const onClickClose = () => setShow(false);
   const onClickSensor = (e) => {
+    ///// 여기서 웹소켓으로 "어떤 센서를 클릭했습니다" 이거 알려줘야 함
     setShow(true);
     setSelectedDevice({
       ...selectedDevice,
@@ -120,16 +122,7 @@ function SensorGraphComponent() {
         });
         dispatch(newEvents(result));
         // 실제 디바이스의 상태들도 변경
-        const newDevices = [];
-        devices.forEach((v) => {
-          newDevices.push({ ...v });
-        });
-        result.forEach((device) => {
-          const theIndex = devices.findIndex((v) => v.deviceId === device.id);
-          newDevices[theIndex].currentStatusCode = device.statusCode;
-          newDevices[theIndex].currentStatusTitle = device.status;
-        });
-        setDevices(newDevices);
+        dispatch(updateDevices(result));
       })
       .catch((err) => console.log(err));
     onClickClose();
