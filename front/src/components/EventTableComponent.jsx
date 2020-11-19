@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import React, { useState, useEffect, useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Button, Form } from "react-bootstrap";
 import EventComponent from "./EventComponent";
 import SensorGraphComponent from "./SensorGraphComponent";
 import { v4 as uuid } from "uuid";
 import "./EventTableStyle.css";
+import { newEvents as newEventAction } from "../modules/newEvents";
 
 function EventTableComponent() {
+  const dispatch = useDispatch();
   const newEvents = useSelector((state) => state.newEventsReducer);
+  const theInterval = useRef(null);
 
   const [events, setEvents] = useState([]);
   const [watchMode, setWatchMode] = useState(false);
@@ -31,7 +34,35 @@ function EventTableComponent() {
 
   useEffect(() => {
     if (watchMode) {
-      console.log(Date.now());
+      const theTimeSeed = Math.floor(Math.random() * 2) + 4;
+      console.log(theTimeSeed);
+      theInterval.current = setInterval(() => {
+        const isAnalog = Math.random() >= 0.5 ? true : false;
+        if (isAnalog) {
+          const sendingData = {
+            id: "wlkfjkewpjgwoihgqweghqg",
+            name: "어떤 감시용 아나로그센-사",
+            signalName: "qowgehoh35135oih!32",
+            // status: [
+            //   "상한치 초과",
+            //   "상한치 복귀",
+            //   "하한치 초과",
+            //   "하한치 복귀",
+            // ],
+            status: "상한치 초과",
+            statusCode: 0,
+            TTS: `true`,
+            blink: true,
+            checked: false,
+          };
+          dispatch(newEventAction([sendingData]));
+        } else {
+        }
+      }, theTimeSeed * 1000);
+    } else {
+      if (theInterval.current) {
+        clearInterval(theInterval.current);
+      }
     }
   }, [watchMode]);
 
@@ -42,10 +73,6 @@ function EventTableComponent() {
     });
     newEvents.map((event) => (event.blink = false));
     setEvents(newEvents);
-  };
-
-  const onClickWatchEvent = () => {
-    setWatchMode(!watchMode);
   };
 
   return (
@@ -75,7 +102,12 @@ function EventTableComponent() {
       </div>
 
       <Form className="watchBtn">
-        <Form.Check type="switch" id="custom-switch" label="감시모드" />
+        <Form.Check
+          type="switch"
+          id="custom-switch"
+          label="감시모드"
+          onChange={() => setWatchMode(!watchMode)}
+        />
       </Form>
       <Button className="stopBtn" variant="danger" onClick={onClickStopBtn}>
         멈춤

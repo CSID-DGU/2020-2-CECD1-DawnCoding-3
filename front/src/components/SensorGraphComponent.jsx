@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { useDispatch } from "react-redux";
-import { newEvents, newEventsClear } from "../modules/newEvents";
+import { newEvents } from "../modules/newEvents";
 import "./SensorStyle.css";
 
 import axios from "axios";
@@ -36,7 +36,7 @@ function SensorGraphComponent() {
   useEffect(() => {
     (async () => {
       const { data } = await axios.get("/devices");
-      console.log(data);
+      // console.log(data);
       setDevices(data);
     })();
   }, []);
@@ -140,7 +140,6 @@ function SensorGraphComponent() {
       code: 0,
       name: "",
     });
-    dispatch(newEventsClear());
   };
 
   return (
@@ -187,7 +186,7 @@ function SensorGraphComponent() {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={onClickEvent}>
-            이벤트 발생
+            상태 제어
           </Button>
           <Button variant="secondary" onClick={onClickClose}>
             닫기
