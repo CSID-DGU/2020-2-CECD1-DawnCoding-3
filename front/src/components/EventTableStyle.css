@@ -16,6 +16,22 @@ td {
   height: 400px;
   overflow-y: scroll;
 }
+.watchBtn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 8rem;
+  height: 3rem;
+  font-size: 1rem;
+  color: black;
+  border: 1px solid #ffc107;
+  background-color: #ffc107;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .stopBtn {
   position: absolute;
   top: 0;

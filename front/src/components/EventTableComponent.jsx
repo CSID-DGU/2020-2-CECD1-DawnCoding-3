@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Button } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import EventComponent from "./EventComponent";
 import SensorGraphComponent from "./SensorGraphComponent";
 import { v4 as uuid } from "uuid";
@@ -9,26 +9,8 @@ import "./EventTableStyle.css";
 function EventTableComponent() {
   const newEvents = useSelector((state) => state.newEventsReducer);
 
-  const [events, setEvents] = useState([
-    // {
-    //   id: 1,
-    //   name: "예시 센서1",
-    //   signalName: "예시 센서1-시그널1",
-    //   status: "동작중",
-    //   TTS: "able",
-    //   blink: true,
-    //   checked: false, // 새로운 이벤트(체크 전, 후에 새로운 이벤트 등장하면 전체 checked를 true로 변경해주는 작업 필요)
-    // },
-    // {
-    //   id: 2,
-    //   name: "예시 센서1",
-    //   signalName: "예시 센서1-시그널2",
-    //   status: "열림",
-    //   TTS: "disable",
-    //   blink: false,
-    //   checked: true, // 기존 이벤트(이미 체크함)
-    // },
-  ]);
+  const [events, setEvents] = useState([]);
+  const [watchMode, setWatchMode] = useState(false);
 
   // 새로운 이벤트 들어오면 화면에 표시
   useEffect(() => {
@@ -44,7 +26,14 @@ function EventTableComponent() {
     });
     newEvents.forEach((event) => beforeEvents.unshift(event));
     setEvents(beforeEvents);
+    // eslint-disable-next-line
   }, [newEvents]);
+
+  useEffect(() => {
+    if (watchMode) {
+      console.log(Date.now());
+    }
+  }, [watchMode]);
 
   const onClickStopBtn = () => {
     let newEvents = [];
@@ -53,6 +42,10 @@ function EventTableComponent() {
     });
     newEvents.map((event) => (event.blink = false));
     setEvents(newEvents);
+  };
+
+  const onClickWatchEvent = () => {
+    setWatchMode(!watchMode);
   };
 
   return (
@@ -81,6 +74,9 @@ function EventTableComponent() {
         </table>
       </div>
 
+      <Form className="watchBtn">
+        <Form.Check type="switch" id="custom-switch" label="감시모드" />
+      </Form>
       <Button className="stopBtn" variant="danger" onClick={onClickStopBtn}>
         멈춤
       </Button>
