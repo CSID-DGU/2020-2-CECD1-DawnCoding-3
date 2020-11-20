@@ -106,22 +106,22 @@ public class MainController {
     public ResponseEntity<List<Device>> getDevices() throws IOException, InterruptedException {
         List<Device> devices = deviceRepository.findAll();
 
-        Runtime rt = Runtime.getRuntime();
-        Process pc = null;
-        try {
-            pc = rt.exec("python C:\\Users\\4whom\\Desktop\\2020-2학기\\종설\\project\\TTS\\gTTS\\sapi.py \"hello dawn coding\"");
+//        Runtime rt = Runtime.getRuntime();
+//        Process pc = null;
+//        try {
+//            pc = rt.exec("python C:\\Users\\4whom\\Desktop\\2020-2학기\\종설\\project\\TTS\\gTTS\\sapi.py \"hello dawn coding\"");
 
-            BufferedReader stdin = new BufferedReader(new InputStreamReader(pc.getInputStream()));
-            String s = null;
-            while ((s = stdin.readLine()) != null) {
-                System.out.print(s);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-                pc.waitFor();
-                pc.destroy();
-        }
+//            BufferedReader stdin = new BufferedReader(new InputStreamReader(pc.getInputStream()));
+//            String s = null;
+//            while ((s = stdin.readLine()) != null) {
+//                System.out.print(s);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//                pc.waitFor();
+//                pc.destroy();
+//        }
         return new ResponseEntity<>(devices, HttpStatus.OK);
     }
 
