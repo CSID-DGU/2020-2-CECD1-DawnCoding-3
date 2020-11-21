@@ -45,6 +45,7 @@ function EventTableComponent() {
         theSetTimeout.current = null;
       }
     }
+    // eslint-disable-next-line
   }, [watchMode]);
 
   const makeSetTimeOut = (theTimeSeed) => {

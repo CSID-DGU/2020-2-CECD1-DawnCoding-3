@@ -65,7 +65,6 @@ public class MainController {
         deviceRepository.saveAll(deviceList);
         return "good!";
     }
-
     @GetMapping("/init2")
     public String initData2() {
         Map<Integer, String> device1Status = new HashMap<>();

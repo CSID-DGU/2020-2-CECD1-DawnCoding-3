@@ -40,11 +40,20 @@ function SensorGraphComponent() {
       // console.log(data);
       dispatch(initDevices(data));
     })();
+    // eslint-disable-next-line
   }, []);
 
   const onClickClose = () => setShow(false);
   const onClickSensor = (e) => {
-    ///// 여기서 웹소켓으로 "어떤 센서를 클릭했습니다" 이거 알려줘야 함
+    // 클릭한 디바이스 이름 TTS로 읽어주기
+    try {
+      (async () => {
+        await axios.get(`/device/${devices[e.target.name].deviceName}`);
+      })();
+    } catch (err) {
+      console.error(err);
+    }
+
     setShow(true);
     setSelectedDevice({
       ...selectedDevice,
@@ -72,6 +81,14 @@ function SensorGraphComponent() {
   };
 
   const onClickEvent = () => {
+    // 선택한 상태 TTS로 읽어주기
+    try {
+      (async () => {
+        await axios.get(`/device/status/${selectedStatus.name}`);
+      })();
+    } catch (err) {
+      console.error(err);
+    }
     const theDate = new Date();
     const sendData = [];
     const theData = {
