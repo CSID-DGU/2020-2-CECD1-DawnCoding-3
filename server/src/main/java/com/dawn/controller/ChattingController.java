@@ -3,11 +3,17 @@ package com.dawn.controller;
 import com.dawn.dto.ChattingMessage;
 import com.dawn.models.ChatMessage;
 import com.dawn.models.MessageType;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 @Controller
 public class ChattingController {
@@ -33,4 +39,5 @@ public class ChattingController {
                 + message.getRoomId(), message);
         return new ChatMessage(MessageType.CHAT, "hello", "socket");
     }
+
 }

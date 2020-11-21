@@ -8,15 +8,34 @@ import { v4 as uuid } from "uuid";
 import "./EventTableStyle.css";
 import { newEvents as newEventAction } from "../modules/newEvents";
 import { updateDevices } from "../modules/devices";
+// const StompJs = require("@stomp/stompjs");
+// Object.assign(global, { WebSocket: require("websocket").w3cwebsocket });
 
 function EventTableComponent() {
   const dispatch = useDispatch();
   const newEvents = useSelector((state) => state.newEventsReducer);
   const devices = useSelector((state) => state.devicesReducer);
   const theSetTimeout = useRef(null);
+  // const client = useRef(new StompJs.Client());
 
   const [events, setEvents] = useState([]);
   const [watchMode, setWatchMode] = useState(false);
+  const [ttsEnd, setTtsEnd] = useState(false);
+
+  // useEffect(() => {
+  //   client.current.brokerURL = "ws://localhost:7000/ws";
+  //   client.current.onConnect = (frame) => {
+  //     console.log("webSocket 연결 성공");
+  //     client.current.subscribe(
+  //       "/topic/public",
+  //       function ({ body }) {
+  //         console.log(body);
+  //       },
+  //       { simpUser: "goo" }
+  //     );
+  //   };
+  //   client.current.activate();
+  // }, []);
 
   // 새로운 이벤트 들어오면 화면에 표시
   useEffect(() => {
@@ -48,6 +67,15 @@ function EventTableComponent() {
     // eslint-disable-next-line
   }, [watchMode]);
 
+  useEffect(() => {
+    if (watchMode) {
+      const theTimeSeed = Math.floor(Math.random() * 2) + 4;
+      theSetTimeout.current = makeSetTimeOut(theTimeSeed);
+    } else {
+      clearTimeout(theSetTimeout.current);
+    }
+  }, [ttsEnd]);
+
   const makeSetTimeOut = (theTimeSeed) => {
     setTimeout(() => {
       const isAnalog = Math.random() >= 0.5 ? true : false;
@@ -55,7 +83,8 @@ function EventTableComponent() {
         // 아날로그 데이터 -> 상한치/하한치를 랜덤하게 선택해서 해당 센서가 상한치/하한치 배열 안에 있다면 복귀 이벤트 발생, 아니면 초과 이벤트 발생
         // status: [ "상한치 초과", "상한치 복귀", "하한치 초과", "하한치 복귀"]
         const theDate = new Date();
-        const sendingData = {
+        const sendData = [];
+        sendData.push({
           createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${theDate.getMilliseconds()}`,
           id: "wlkfjkewpjgwoihgqweghqg",
           name: "어떤 감시용 아나로그센-사",
@@ -65,19 +94,29 @@ function EventTableComponent() {
           TTS: `true`,
           blink: true,
           checked: false,
-        };
-        dispatch(newEventAction([sendingData]));
+        });
+        dispatch(newEventAction(sendData));
+
+        (async () => {
+          const theResult = await axios.post(
+            "/device/tts",
+            sendData.map((a) => a.name)
+          );
+          console.log(theResult);
+          setTtsEnd(true);
+        })();
       } else {
         // 상태 데이터의 감시 이벤트 발생
         const theSelectedIndex = Math.floor(Math.random() * devices.length);
         const theDate = new Date();
+        const sendData = [];
         const selectedDevice = {
           createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${theDate.getMilliseconds()}`,
           deviceId: devices[theSelectedIndex].deviceId,
           currentStatusCode: devices[theSelectedIndex].code,
           tts: devices[theSelectedIndex].tts,
         };
-        const sendData = [selectedDevice];
+        sendData.push(selectedDevice);
         // 총 4~5개의 센서 상태가 한 번에 변함
         const moreEventsNumber = 2 + Math.floor(Math.random() * 3);
         Array(moreEventsNumber)
@@ -117,6 +156,14 @@ function EventTableComponent() {
                 checked: false,
               };
             });
+            (async () => {
+              const theResult = await axios.post(
+                "/device/tts",
+                result.map((a) => a.name)
+              );
+              console.log(theResult);
+              setTtsEnd(true);
+            })();
             dispatch(newEventAction(result));
             // 실제 디바이스의 상태들도 변경
             dispatch(updateDevices(result));
@@ -125,8 +172,6 @@ function EventTableComponent() {
       }
       // 우선 이벤트 발생 되면 서버에 이벤트 기록하고 감시 이벤트 발생을 중지
       // 감시 이벤트에서 TTS 읽어주기가 끝나면 다시 setTimeout 실행
-      const theTimeSeed = Math.floor(Math.random() * 2) + 4;
-      theSetTimeout.current = makeSetTimeOut(theTimeSeed);
     }, theTimeSeed * 1000);
   };
 
