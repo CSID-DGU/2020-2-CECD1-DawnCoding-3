@@ -183,17 +183,18 @@ public class MainController {
         for (DeviceDTO.Update device : devices) {
             Device deviceInDB = deviceRepository.findById(device.getDeviceId()).get();
             if (deviceInDB.isAnalog()) {
+
                 if (!deviceInDB.isInDeadband() && (!Device.isSafeZone(deviceInDB, device.getCurrValue()))) {
                     deviceInDB.setInDeadband(true);
                 } else {
                     if (deviceInDB.isInDeadband() && Device.isSafeZone(deviceInDB, device.getCurrValue())) {
                         deviceInDB.setInDeadband(false);
-                    } else {
-                        continue;
                     }
                 }
+                System.out.println("ㄴㅇㄹㄴㄹㄷ");
                 deviceInDB.setCurrValue(device.getCurrValue());
                 deviceRepository.save(deviceInDB);
+                result.add(deviceInDB);
             } else {
                 deviceInDB.setCurrentStatusCode(device.getCurrentStatusCode());
                 deviceInDB.setCurrentStatusTitle(deviceInDB.getStatuses().get(device.getCurrentStatusCode()));

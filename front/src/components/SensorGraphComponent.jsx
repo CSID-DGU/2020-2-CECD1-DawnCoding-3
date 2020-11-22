@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, Button, Form, InputGroup, FormControl } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { newEvents } from "../modules/newEvents";
-import { updateDevices, initDevices } from "../modules/devices";
+import { updateDevices, initDevices, updateAnalog } from "../modules/devices";
 import "./SensorStyle.css";
 
 import axios from "axios";
@@ -50,7 +50,6 @@ function SensorGraphComponent() {
   useEffect(() => {
     (async () => {
       const { data } = await axios.get("/devices");
-      // console.log(data);
       dispatch(initDevices(data));
     })();
     // eslint-disable-next-line
@@ -98,13 +97,7 @@ function SensorGraphComponent() {
   const onChangeAnalog = (e) => {
     setSelectedAnalog({
       ...selectedAnalog,
-      [e.target.name]:
-        e.target.name === "currValue" &&
-        e.target.value < selectedAnalog.lowCriticalPoint
-          ? selectedAnalog.lowCriticalPoint
-          : e.target.value > selectedAnalog.highCriticalPoint
-          ? selectedAnalog.highCriticalPoint
-          : e.target.value,
+      currValue: e.target.value,
     });
   };
 
@@ -182,7 +175,48 @@ function SensorGraphComponent() {
 
   const onClickAnalog = (e) => {
     setShowAnalog(true);
-    console.log(e.target);
+    console.log(devices[e.target.name]);
+    setSelectedAnalog({
+      deviceId: devices[e.target.name].deviceId,
+      deviceName: devices[e.target.name].deviceName,
+      signalName: devices[e.target.name].signalName,
+      highBound: devices[e.target.name].highBound,
+      highCriticalPoint: devices[e.target.name].highCriticalPoint,
+      lowCriticalPoint: devices[e.target.name].lowCriticalPoint,
+      lowerBound: devices[e.target.name].lowerBound,
+      currValue: devices[e.target.name].currValue,
+      tts: devices[e.target.name].tts,
+    });
+    // 클릭한 디바이스 이름 TTS로 읽어주기
+    try {
+      (async () => {
+        await axios.get(`/device/${devices[e.target.name].deviceName}`);
+      })();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  const onClickValueChange = () => {
+    try {
+      (async () => {
+        const { data } = await axios.put(`/device`, [
+          {
+            deviceId: selectedAnalog.deviceId,
+            currValue: selectedAnalog.currValue,
+            tts: selectedAnalog.tts,
+          },
+        ]);
+        dispatch(
+          updateAnalog({
+            deviceId: data[0].deviceId,
+            currValue: data[0].currValue,
+          })
+        );
+      })();
+      setShowAnalog(false);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -195,11 +229,9 @@ function SensorGraphComponent() {
               device && (
                 <Button
                   variant={sensorTheme[index % 6]}
-
                   onClick={(e) => {
                     device.analog ? onClickAnalog(e) : onClickSensor(e);
                   }}
-
                   key={device.deviceId}
                   name={index}
                 >
@@ -208,9 +240,6 @@ function SensorGraphComponent() {
               )
           )}
       </div>
-      <Button variant={sensorTheme[0]} onClick={onClickAnalog} name={0}>
-        아날로그 센서
-      </Button>
 
       {/* 상태 모달 창 */}
       <Modal show={show} onHide={() => {}}>
@@ -263,8 +292,8 @@ function SensorGraphComponent() {
                 type="number"
                 placeholder="high bound"
                 name="highBound"
+                readOnly
                 value={selectedAnalog.highBound}
-                onChange={onChangeAnalog}
               />
             </InputGroup>
             <InputGroup className="mb-3">
@@ -275,8 +304,8 @@ function SensorGraphComponent() {
                 type="number"
                 placeholder="high critical point"
                 name="highCriticalPoint"
+                readOnly
                 value={selectedAnalog.highCriticalPoint}
-                onChange={onChangeAnalog}
               />
             </InputGroup>
 
@@ -288,8 +317,8 @@ function SensorGraphComponent() {
                 type="number"
                 placeholder="low critical point"
                 name="lowCriticalPoint"
+                readOnly
                 value={selectedAnalog.lowCriticalPoint}
-                onChange={onChangeAnalog}
               />
             </InputGroup>
             <InputGroup className="mb-3">
@@ -300,8 +329,8 @@ function SensorGraphComponent() {
                 type="number"
                 placeholder="lower bound"
                 name="lowerBound"
+                readOnly
                 value={selectedAnalog.lowerBound}
-                onChange={onChangeAnalog}
               />
             </InputGroup>
 
@@ -320,7 +349,7 @@ function SensorGraphComponent() {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={onClickEvent}>
+          <Button variant="primary" onClick={onClickValueChange}>
             수치 변경
           </Button>
           <Button variant="secondary" onClick={onClickCloseAnalog}>
