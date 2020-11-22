@@ -8,34 +8,16 @@ import { v4 as uuid } from "uuid";
 import "./EventTableStyle.css";
 import { newEvents as newEventAction } from "../modules/newEvents";
 import { updateDevices } from "../modules/devices";
-// const StompJs = require("@stomp/stompjs");
-// Object.assign(global, { WebSocket: require("websocket").w3cwebsocket });
 
 function EventTableComponent() {
   const dispatch = useDispatch();
   const newEvents = useSelector((state) => state.newEventsReducer);
   const devices = useSelector((state) => state.devicesReducer);
   const theSetTimeout = useRef(null);
-  // const client = useRef(new StompJs.Client());
 
   const [events, setEvents] = useState([]);
   const [watchMode, setWatchMode] = useState(false);
   const [ttsEnd, setTtsEnd] = useState(false);
-
-  // useEffect(() => {
-  //   client.current.brokerURL = "ws://localhost:7000/ws";
-  //   client.current.onConnect = (frame) => {
-  //     console.log("webSocket 연결 성공");
-  //     client.current.subscribe(
-  //       "/topic/public",
-  //       function ({ body }) {
-  //         console.log(body);
-  //       },
-  //       { simpUser: "goo" }
-  //     );
-  //   };
-  //   client.current.activate();
-  // }, []);
 
   // 새로운 이벤트 들어오면 화면에 표시
   useEffect(() => {
@@ -74,6 +56,7 @@ function EventTableComponent() {
     } else {
       clearTimeout(theSetTimeout.current);
     }
+    // eslint-disable-next-line
   }, [ttsEnd]);
 
   const makeSetTimeOut = (theTimeSeed) => {
@@ -81,7 +64,7 @@ function EventTableComponent() {
       const isAnalog = Math.random() >= 0.5 ? true : false;
       if (isAnalog) {
         // 아날로그 데이터 -> 상한치/하한치를 랜덤하게 선택해서 해당 센서가 상한치/하한치 배열 안에 있다면 복귀 이벤트 발생, 아니면 초과 이벤트 발생
-        // status: [ "상한치 초과", "상한치 복귀", "하한치 초과", "하한치 복귀"]
+        // status: ["상한치 초과", "상한치 복귀", "하한치 초과", "하한치 복귀"];
         const theDate = new Date();
         const sendData = [];
         sendData.push({
@@ -97,14 +80,12 @@ function EventTableComponent() {
         });
         dispatch(newEventAction(sendData));
 
-        (async () => {
-          const theResult = await axios.post(
-            "/device/tts",
-            sendData.map((a) => a.name)
-          );
-          console.log(theResult);
-          setTtsEnd(true);
-        })();
+        // TTS 요청
+        // axios
+        //   .put("/device/tts", sendData)
+        //   .then(() => setTtsEnd(true))
+        //   .catch((err) => console.log(err));
+        setTimeout(() => setTtsEnd(!ttsEnd), 1400);
       } else {
         // 상태 데이터의 감시 이벤트 발생
         const theSelectedIndex = Math.floor(Math.random() * devices.length);
@@ -140,33 +121,35 @@ function EventTableComponent() {
             });
           });
         // 각각 변한 데이터를 put 요청
-        Promise.all(sendData.map((data) => axios.put("/device", data)))
-          .then((result) => {
+        axios
+          .put("/device", sendData)
+          .then(({ data: result }) => {
             result = result.map((inner, i) => {
               return {
                 // timestamp : inner.어쩌고저쩌고
                 createDate: sendData[i].createDate,
-                id: inner.data.deviceId,
-                name: inner.data.deviceName,
-                signalName: inner.data.signalName,
-                status: inner.data.statuses[inner.data.currentStatusCode],
-                statusCode: inner.data.currentStatusCode,
-                TTS: `${inner.data.tts}`,
+                id: inner.deviceId,
+                name: inner.deviceName,
+                signalName: inner.signalName,
+                status: inner.statuses[inner.currentStatusCode],
+                statusCode: inner.currentStatusCode,
+                TTS: `${inner.tts}`,
                 blink: true,
                 checked: false,
               };
             });
-            (async () => {
-              const theResult = await axios.post(
-                "/device/tts",
-                result.map((a) => a.name)
-              );
-              console.log(theResult);
-              setTtsEnd(true);
-            })();
             dispatch(newEventAction(result));
             // 실제 디바이스의 상태들도 변경
             dispatch(updateDevices(result));
+            // TTS 요청
+            axios
+              .put("/device/tts", sendData)
+              .then((res) => {
+                console.log(res);
+
+                setTtsEnd(!ttsEnd);
+              })
+              .catch((err) => console.log(err));
           })
           .catch((err) => console.log(err));
       }

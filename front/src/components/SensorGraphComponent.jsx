@@ -81,14 +81,6 @@ function SensorGraphComponent() {
   };
 
   const onClickEvent = () => {
-    // 선택한 상태 TTS로 읽어주기
-    try {
-      (async () => {
-        await axios.get(`/device/status/${selectedStatus.name}`);
-      })();
-    } catch (err) {
-      console.error(err);
-    }
     const theDate = new Date();
     const sendData = [];
     const theData = {
@@ -121,18 +113,19 @@ function SensorGraphComponent() {
       });
 
     // 각각 변한 데이터를 put 요청
-    Promise.all(sendData.map((data) => axios.put("/device", data)))
-      .then((result) => {
+    axios
+      .put("/device", sendData)
+      .then(({ data: result }) => {
         result = result.map((inner, i) => {
           return {
             // timestamp : inner.어쩌고저쩌고
             createDate: sendData[i].createDate,
-            id: inner.data.deviceId,
-            name: inner.data.deviceName,
-            signalName: inner.data.signalName,
-            status: inner.data.statuses[inner.data.currentStatusCode],
-            statusCode: inner.data.currentStatusCode,
-            TTS: `${inner.data.tts}`,
+            id: inner.deviceId,
+            name: inner.deviceName,
+            signalName: inner.signalName,
+            status: inner.statuses[inner.currentStatusCode],
+            statusCode: inner.currentStatusCode,
+            TTS: `${inner.tts}`,
             blink: true,
             checked: false,
           };
@@ -140,8 +133,33 @@ function SensorGraphComponent() {
         dispatch(newEvents(result));
         // 실제 디바이스의 상태들도 변경
         dispatch(updateDevices(result));
+        // TTS 요청
+        axios.put("/device/tts", sendData).catch((err) => console.log(err));
       })
       .catch((err) => console.log(err));
+
+    // Promise.all(sendData.map((data) => axios.put("/device/control", data)))
+    //   .then((result) => {
+    //     console.log(result);
+    //     result = result.map((inner, i) => {
+    //       return {
+    //         // timestamp : inner.어쩌고저쩌고
+    //         createDate: sendData[i].createDate,
+    //         id: inner.data.deviceId,
+    //         name: inner.data.deviceName,
+    //         signalName: inner.data.signalName,
+    //         status: inner.data.statuses[inner.data.currentStatusCode],
+    //         statusCode: inner.data.currentStatusCode,
+    //         TTS: `${inner.data.tts}`,
+    //         blink: true,
+    //         checked: false,
+    //       };
+    //     });
+    //     dispatch(newEvents(result));
+    //     // 실제 디바이스의 상태들도 변경
+    //     dispatch(updateDevices(result));
+    //   })
+    //   .catch((err) => console.log(err));
     onClickClose();
     setSelectedDevice({
       deviceId: "",
