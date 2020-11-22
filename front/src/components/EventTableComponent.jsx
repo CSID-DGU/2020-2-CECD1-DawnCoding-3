@@ -1,32 +1,22 @@
-import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import { Button, Form } from "react-bootstrap";
 import EventComponent from "./EventComponent";
 import SensorGraphComponent from "./SensorGraphComponent";
+import { v4 as uuid } from "uuid";
 import "./EventTableStyle.css";
+import { newEvents as newEventAction } from "../modules/newEvents";
+import { updateDevices } from "../modules/devices";
 
 function EventTableComponent() {
+  const dispatch = useDispatch();
   const newEvents = useSelector((state) => state.newEventsReducer);
+  const devices = useSelector((state) => state.devicesReducer);
+  const theSetTimeout = useRef(null);
 
-  const [events, setEvents] = useState([
-    // {
-    //   id: 1,
-    //   name: "예시 센서1",
-    //   signalName: "예시 센서1-시그널1",
-    //   status: "동작중",
-    //   TTS: "able",
-    //   blink: true,
-    //   checked: false, // 새로운 이벤트(체크 전, 후에 새로운 이벤트 등장하면 전체 checked를 true로 변경해주는 작업 필요)
-    // },
-    // {
-    //   id: 2,
-    //   name: "예시 센서1",
-    //   signalName: "예시 센서1-시그널2",
-    //   status: "열림",
-    //   TTS: "disable",
-    //   blink: false,
-    //   checked: true, // 기존 이벤트(이미 체크함)
-    // },
-  ]);
+  const [events, setEvents] = useState([]);
+  const [watchMode, setWatchMode] = useState(false);
 
   // 새로운 이벤트 들어오면 화면에 표시
   useEffect(() => {
@@ -34,14 +24,110 @@ function EventTableComponent() {
     events.forEach((event) => {
       beforeEvents.push({
         ...event,
-        id: event.id + newEvents.length, // Backend로부터 전달받은 newEvent 개수만큼 id를 더해줌
         blink: false,
         checked: true,
       });
     });
     newEvents.forEach((event) => beforeEvents.unshift(event));
     setEvents(beforeEvents);
+    // eslint-disable-next-line
   }, [newEvents]);
+
+  useEffect(() => {
+    if (watchMode) {
+      // watch 모드이면 감시 이벤트 발생
+      const theTimeSeed = Math.floor(Math.random() * 2) + 4;
+      theSetTimeout.current = makeSetTimeOut(theTimeSeed);
+    } else {
+      // watch 모드 아니면 이벤트 발생 중지
+      if (theSetTimeout.current) {
+        clearTimeout(theSetTimeout.current);
+        theSetTimeout.current = null;
+      }
+    }
+  }, [watchMode]);
+
+  const makeSetTimeOut = (theTimeSeed) => {
+    setTimeout(() => {
+      const isAnalog = Math.random() >= 0.5 ? true : false;
+      if (isAnalog) {
+        // 아날로그 데이터 -> 상한치/하한치를 랜덤하게 선택해서 해당 센서가 상한치/하한치 배열 안에 있다면 복귀 이벤트 발생, 아니면 초과 이벤트 발생
+        // status: [ "상한치 초과", "상한치 복귀", "하한치 초과", "하한치 복귀"]
+        const theDate = new Date();
+        const sendingData = {
+          createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${theDate.getMilliseconds()}`,
+          id: "wlkfjkewpjgwoihgqweghqg",
+          name: "어떤 감시용 아나로그센-사",
+          signalName: "qowgehoh35135oih!32",
+          status: "상한치 초과",
+          statusCode: 0,
+          TTS: `true`,
+          blink: true,
+          checked: false,
+        };
+        dispatch(newEventAction([sendingData]));
+      } else {
+        // 상태 데이터의 감시 이벤트 발생
+        const theSelectedIndex = Math.floor(Math.random() * devices.length);
+        const theDate = new Date();
+        const selectedDevice = {
+          createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${theDate.getMilliseconds()}`,
+          deviceId: devices[theSelectedIndex].deviceId,
+          currentStatusCode: devices[theSelectedIndex].code,
+          tts: devices[theSelectedIndex].tts,
+        };
+        const sendData = [selectedDevice];
+        // 총 4~5개의 센서 상태가 한 번에 변함
+        const moreEventsNumber = 2 + Math.floor(Math.random() * 3);
+        Array(moreEventsNumber)
+          .fill()
+          .forEach((v, i) => {
+            const moreEventDevice = devices.find(
+              (device) =>
+                device.deviceId ===
+                ((selectedDevice.deviceId + i) % devices.length) + 1
+            );
+            const theDate = new Date();
+            sendData.push({
+              createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${
+                theDate.getMilliseconds() + Math.floor(Math.random() * 10)
+              }`,
+              deviceId: moreEventDevice.deviceId,
+              currentStatusCode:
+                (moreEventDevice.currentStatusCode + 1) %
+                Object.keys(moreEventDevice.statuses).length,
+              tts: moreEventDevice.tts,
+            });
+          });
+        // 각각 변한 데이터를 put 요청
+        Promise.all(sendData.map((data) => axios.put("/device", data)))
+          .then((result) => {
+            result = result.map((inner, i) => {
+              return {
+                // timestamp : inner.어쩌고저쩌고
+                createDate: sendData[i].createDate,
+                id: inner.data.deviceId,
+                name: inner.data.deviceName,
+                signalName: inner.data.signalName,
+                status: inner.data.statuses[inner.data.currentStatusCode],
+                statusCode: inner.data.currentStatusCode,
+                TTS: `${inner.data.tts}`,
+                blink: true,
+                checked: false,
+              };
+            });
+            dispatch(newEventAction(result));
+            // 실제 디바이스의 상태들도 변경
+            dispatch(updateDevices(result));
+          })
+          .catch((err) => console.log(err));
+      }
+      // 우선 이벤트 발생 되면 서버에 이벤트 기록하고 감시 이벤트 발생을 중지
+      // 감시 이벤트에서 TTS 읽어주기가 끝나면 다시 setTimeout 실행
+      const theTimeSeed = Math.floor(Math.random() * 2) + 4;
+      theSetTimeout.current = makeSetTimeOut(theTimeSeed);
+    }, theTimeSeed * 1000);
+  };
 
   const onClickStopBtn = () => {
     let newEvents = [];
@@ -59,7 +145,7 @@ function EventTableComponent() {
         <table>
           <thead>
             <tr>
-              <th>Num</th>
+              <th>timeStamp</th>
               <th>명칭</th>
               <th>Signal Name</th>
               <th>상태</th>
@@ -69,18 +155,25 @@ function EventTableComponent() {
           <tbody>
             {events.map((event, i) => (
               <EventComponent
-                key={`${event.id}${event.status}${new Date()}`}
+                key={`${event.id}${event.status}${uuid()}`}
                 event={event}
-                num={i + 1}
               />
             ))}
           </tbody>
         </table>
       </div>
 
-      <button className="stopBtn" onClick={onClickStopBtn}>
+      <Form className="watchBtn">
+        <Form.Check
+          type="switch"
+          id="custom-switch"
+          label="감시모드"
+          onChange={() => setWatchMode(!watchMode)}
+        />
+      </Form>
+      <Button className="stopBtn" variant="danger" onClick={onClickStopBtn}>
         멈춤
-      </button>
+      </Button>
       <SensorGraphComponent />
     </div>
   );

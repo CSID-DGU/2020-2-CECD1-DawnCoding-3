@@ -9,5 +9,6 @@ TTS/gTTS/__pycache__/play.cpython-36.pyc
 TTS/gTTS/__pycache__/sapi.cpython-38.pyc
 .vscode/settings.json
 TTS/gTTS/__pycache__/gtts.cpython-38.pyc
-
 pythons/venv
+pythons/data.xlsx
+STT/speechtotext-295717-b3de25a050a9.json

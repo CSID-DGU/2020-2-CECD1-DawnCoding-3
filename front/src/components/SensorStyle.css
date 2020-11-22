@@ -1,9 +1,5 @@
-#sensor {
-  display: inline-block;
-  width: 200px;
-  border: 0.5px solid black;
-}
-#sensor button {
-  border: 0.5px solid black;
-  background-color: mediumaquamarine;
+.sensors {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: space-evenly;
 }

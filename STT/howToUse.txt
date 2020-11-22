@@ -1,0 +1,13 @@
+1. 구글 클라우드플랫폼에서 프로젝트 생성 >> API 사용 선택 >> 키 생성 (json)
+
+2. set GOOGLE_APPLICATION_CREDENTIALS={API key route}
+
+3. Cloud SDK, Visual C++ 설치
+
+4. SDK shell >> gcloud init >> Create a new configuration >>계정 연결 >> 프로젝트 선택
+
+5. Anaconda Shell에서 서비스 계정 등록
+
+-> gcloud auth activate-service-account --key-file={API key route}
+
+6. virtual_env 환경 세팅 후 STT_test.py 실행

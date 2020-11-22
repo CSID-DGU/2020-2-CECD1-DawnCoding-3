@@ -1,10 +1,19 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { newEvents, newEventsClear, fakeAjax } from "../modules/newEvents";
-import "./SensorStyle.css";
+import { Button } from "react-bootstrap";
+import { newEvents, newEventsClear } from "../modules/newEvents";
 import axios from "axios";
 
-function Sensor({ deviceInfo }) {
+const sensorTheme = [
+  "outline-primary",
+  "outline-secondary",
+  "outline-success",
+  "outline-danger",
+  "outline-info",
+  "outline-dark",
+];
+
+function Sensor({ deviceInfo, handleShow, index }) {
   const dispatch = useDispatch();
   const [sensorState, setSensorState] = useState(
     deviceInfo.statuses[deviceInfo.currentStatusCode]
@@ -14,7 +23,6 @@ function Sensor({ deviceInfo }) {
     e.preventDefault();
     (async () => {
       try {
-        // const result = await fakeAjax(deviceInfo.deviceName, sensorState); // 실제 서버와의 통신이 필요한 부분
         let statusCode = null;
         Object.entries(deviceInfo.statuses).forEach((inner, index) => {
           if (inner[1] === sensorState) statusCode = index;
@@ -53,15 +61,18 @@ function Sensor({ deviceInfo }) {
   };
 
   return (
-    <div id="sensor">
-      <div id="sensorName">{deviceInfo.deviceName}</div>
-      <select id="state" onChange={onChangeSensorState}>
-        {Object.entries(deviceInfo.statuses).map((inner) => (
-          <option key={inner[0]}>{inner[1]}</option>
-        ))}
-      </select>
-      <button onClick={onClickEvent}>이벤트 발생</button>
-    </div>
+    <Button variant={sensorTheme[index]} onClick={handleShow}>
+      {deviceInfo.deviceName}
+    </Button>
+    // <div id="sensor">
+    //   <div id="sensorName">{deviceInfo.deviceName}</div>
+    //   <select id="state" onChange={onChangeSensorState}>
+    //     {Object.entries(deviceInfo.statuses).map((inner) => (
+    //       <option key={inner[0]}>{inner[1]}</option>
+    //     ))}
+    //   </select>
+    //   <button onClick={onClickEvent}>이벤트 발생</button>
+    // </div>
   );
 }
 
