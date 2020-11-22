@@ -146,8 +146,8 @@ public class MainController {
         Process pc = null;
 
         try {
-            System.out.println("python "+ sapiRealPath + " \"" + deviceName + "가선택되었습니다\"");
-            pc = rt.exec("python "+ sapiRealPath + " \"" + deviceName + "가선택되었습니다\"");
+            System.out.println("python "+ sapiRealPath + " \"" + deviceName + "가,선택되었습니다\"");
+            pc = rt.exec("python "+ sapiRealPath + " \"" + deviceName + "가,선택되었습니다\"");
             BufferedReader stdin = new BufferedReader(new InputStreamReader(pc.getInputStream()));
         } catch (Exception e) {
             e.printStackTrace();
@@ -164,7 +164,7 @@ public class MainController {
         Runtime rt = Runtime.getRuntime();
         Process pc = null;
         try {
-            message = message.replaceAll(" ", "");
+            message = message.replaceAll(" ", ",");
             System.out.println("python "+ sapiRealPath + " " + message);
             pc = rt.exec("python "+ sapiRealPath + " \"" +  message);
             BufferedReader stdin = new BufferedReader(new InputStreamReader(pc.getInputStream()));
@@ -183,15 +183,6 @@ public class MainController {
         for (DeviceDTO.Update device : devices) {
             Device deviceInDB = deviceRepository.findById(device.getDeviceId()).get();
             if (deviceInDB.isAnalog()) {
-
-                if (!deviceInDB.isInDeadband() && (!Device.isSafeZone(deviceInDB, device.getCurrValue()))) {
-                    deviceInDB.setInDeadband(true);
-                } else {
-                    if (deviceInDB.isInDeadband() && Device.isSafeZone(deviceInDB, device.getCurrValue())) {
-                        deviceInDB.setInDeadband(false);
-                    }
-                }
-                System.out.println("ㄴㅇㄹㄴㄹㄷ");
                 deviceInDB.setCurrValue(device.getCurrValue());
                 deviceRepository.save(deviceInDB);
                 result.add(deviceInDB);
@@ -216,24 +207,39 @@ public class MainController {
             }
             Device deviceInDB = deviceRepository.findById(device.getDeviceId()).get();
             if (deviceInDB.isAnalog()) {
+                System.out.println("----------------------------------------");
+                System.out.println(deviceInDB.isInDeadband());
+                System.out.println(Device.isSafeZone(deviceInDB, device.getCurrValue()));
+                System.out.println(device.getCurrValue());
+                System.out.println(deviceInDB.getHighCriticalPoint());
+
                 if (!deviceInDB.isInDeadband() && (!Device.isSafeZone(deviceInDB, device.getCurrValue()))) {
                     String ttsMessage = null;
                     if(device.getCurrValue() >= deviceInDB.getHighCriticalPoint()) {
-                        ttsMessage = deviceInDB.getDeviceName() + "의 계측값이" +
+                        ttsMessage = deviceInDB.getDeviceName() + "의 계측값이 " +
                                 device.getCurrValue() + "으로 상한치를 초과하였습니다";
+
                     } else {
-                        ttsMessage = deviceInDB.getDeviceName() + "의 계측값이" +
+                        ttsMessage = deviceInDB.getDeviceName() + "의 계측값이 " +
                                 device.getCurrValue() + "으로 하한치를 초과하였습니다";
+
                     }
                     deviceInDB.setInDeadband(true);
+                    deviceRepository.save(deviceInDB);
+
+                    System.out.println("여기 1번");
                     runSapi(ttsMessage);
                 } else {
                     if (deviceInDB.isInDeadband() && Device.isSafeZone(deviceInDB, device.getCurrValue())) {
-                        String ttsMessage = deviceInDB.getDeviceName() + "의 계측값이" +
+                        String ttsMessage = deviceInDB.getDeviceName() + "의 계측값이 " +
                                 device.getCurrValue() + "정상치로 복귀했습니다";
                         deviceInDB.setInDeadband(false);
+                        deviceRepository.save(deviceInDB);
+
+                        System.out.println("여기 2번");
                         runSapi(ttsMessage);
                     } else {
+                        System.out.println("여기3번");
                         continue;
                     }
                 }
@@ -247,7 +253,7 @@ public class MainController {
 
 
                 try {
-                    String ttsMessage = deviceInDB.getDeviceName() + "의 상태가" +
+                    String ttsMessage = deviceInDB.getDeviceName() + "의 상태가 " +
                             deviceInDB.getCurrentStatusTitle() + " 입니다";
                     runSapi(ttsMessage);
                 } catch (Exception e) {

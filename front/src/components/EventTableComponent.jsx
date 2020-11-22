@@ -7,13 +7,17 @@ import SensorGraphComponent from "./SensorGraphComponent";
 import { v4 as uuid } from "uuid";
 import "./EventTableStyle.css";
 import { newEvents as newEventAction } from "../modules/newEvents";
-import { updateDevices } from "../modules/devices";
+import { updateDevices, updateAnalog } from "../modules/devices";
+
+const StatusDeviceNum = 7;
 
 function EventTableComponent() {
   const dispatch = useDispatch();
   const newEvents = useSelector((state) => state.newEventsReducer);
   const devices = useSelector((state) => state.devicesReducer);
   const theSetTimeout = useRef(null);
+  const highLimitList = useRef(0);
+  const lowLimitList = useRef(0);
 
   const [events, setEvents] = useState([]);
   const [watchMode, setWatchMode] = useState(false);
@@ -61,34 +65,105 @@ function EventTableComponent() {
 
   const makeSetTimeOut = (theTimeSeed) => {
     setTimeout(() => {
-      const isAnalog = Math.random() >= 0.5 ? true : false;
+      // const isAnalog = Math.random() >= 0.5 ? true : false;
+      const isAnalog = false;
       if (isAnalog) {
         // 아날로그 데이터 -> 상한치/하한치를 랜덤하게 선택해서 해당 센서가 상한치/하한치 배열 안에 있다면 복귀 이벤트 발생, 아니면 초과 이벤트 발생
         // status: ["상한치 초과", "상한치 복귀", "하한치 초과", "하한치 복귀"];
+        const isUpper = Math.random() >= 0.5 ? true : false;
+        let theId = 0;
+        let theLimit = 0;
+        let eventStatus = "";
+        // if (isUpper) {
+        //   // 상한치 초과
+        //   if (highLimitList.current.length !== "") {
+        //     theId = highLimitList.current;
+        //     highLimitList.current = "";
+        //     eventStatus = `상한치 복귀`;
+        //     console.log(devices[theId]);
+        //     theLimit = devices[theId].highCriticalPoint - 5;
+        //   } else {
+        //     theId = Math.floor(Math.random() * 40) + 8;
+        //     highLimitList.current = theId;
+        //     eventStatus = `상한치 초과`;
+        //     theLimit = devices[theId].highCriticalPoint + 4;
+        //   }
+        // } else {
+        //   // 하한치 초과
+        //   if (lowLimitList.current !== "") {
+        //     theId = lowLimitList.current;
+        //     lowLimitList.current = "";
+        //     theLimit = devices[theId].lowCriticalPoint + 5;
+        //     console.log(devices[theId]);
+        //     eventStatus = `하한치 복귀`;
+        //   } else {
+        //     theId = Math.floor(Math.random() * 40) + 8;
+        //     theLimit = devices[theId].lowCriticalPoint - 4;
+        //     console.log(devices[theId]);
+        //     eventStatus = `하한치 초과`;
+        //     lowLimitList.current = theId;
+        //   }
+        // }
+
+        // 여기 임시로 그냥 강제
+        theId = 9;
+        if (highLimitList.current === 0) {
+          highLimitList.current = theId;
+          theLimit = devices[theId].highCriticalPoint + 4;
+          eventStatus = "상한치 초과";
+        } else {
+          theLimit = devices[theId].highCriticalPoint - 5;
+          highLimitList.current = 0;
+          eventStatus = "상한치 복귀";
+        }
+
         const theDate = new Date();
         const sendData = [];
         sendData.push({
           createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${theDate.getMilliseconds()}`,
-          id: "wlkfjkewpjgwoihgqweghqg",
-          name: "어떤 감시용 아나로그센-사",
-          signalName: "qowgehoh35135oih!32",
-          status: "상한치 초과",
-          statusCode: 0,
-          TTS: `true`,
-          blink: true,
-          checked: false,
+          deviceId: theId,
+          currValue: theLimit,
+          tts: true,
         });
-        dispatch(newEventAction(sendData));
-
-        // TTS 요청
         axios
-          .put("/device/analogueTTS", sendData)
-          .then(() => setTtsEnd(true))
-          .catch((err) => console.log(err));
-        setTimeout(() => setTtsEnd(!ttsEnd), 1400);
+          .put("/device", sendData)
+          .then((res) => {
+            const theResult = res.data[0];
+
+            const result = [
+              {
+                createDate: sendData[0].createDate,
+                id: theResult.deviceId,
+                name: theResult.deviceName,
+                signalName: theResult.signalName,
+                status: eventStatus,
+                TTS: `${theResult.tts}`,
+                blink: true,
+                checked: false,
+              },
+            ];
+            console.log(theResult);
+
+            dispatch(newEventAction(result));
+            dispatch(
+              updateAnalog({
+                deviceId: theResult.deviceId,
+                currValue: theResult.currValue,
+              })
+            );
+            // TTS 요청
+            axios
+              .put("/device/tts", sendData)
+              .then((res) => {
+                // console.log(res);
+                setTtsEnd(!ttsEnd);
+              })
+              .catch((err) => console.log(err));
+          })
+          .catch((err) => console.error(err));
       } else {
         // 상태 데이터의 감시 이벤트 발생
-        const theSelectedIndex = Math.floor(Math.random() * devices.length);
+        const theSelectedIndex = Math.floor(Math.random() * 7);
         const theDate = new Date();
         const sendData = [];
         const selectedDevice = {
@@ -106,7 +181,7 @@ function EventTableComponent() {
             const moreEventDevice = devices.find(
               (device) =>
                 device.deviceId ===
-                ((selectedDevice.deviceId + i) % devices.length) + 1
+                ((selectedDevice.deviceId + i) % StatusDeviceNum) + 1
             );
             const theDate = new Date();
             sendData.push({

@@ -7,6 +7,8 @@ import "./SensorStyle.css";
 
 import axios from "axios";
 
+const StatusDeviceNum = 7;
+
 const sensorTheme = [
   "outline-primary",
   "outline-secondary",
@@ -118,7 +120,7 @@ function SensorGraphComponent() {
       .forEach((v, i) => {
         const moreEventDevice = devices.find(
           (device) =>
-            device.deviceId === ((theData.deviceId + i) % devices.length) + 1
+            device.deviceId === ((theData.deviceId + i) % StatusDeviceNum) + 1
         );
         const theDate = new Date();
         sendData.push({
