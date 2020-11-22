@@ -28,6 +28,20 @@ public class Device implements Serializable  {
 
     private boolean tts;
 
+    private boolean analog;
+
+    private int lowerBound = 0;
+
+    private int lowCriticalPoint = 20;
+
+    private int highBound = 100;
+
+    private int highCriticalPoint = 80;
+
+
+    @Enumerated(EnumType.ORDINAL)
+    private UnitType unitType;
+
     @ElementCollection
     @CollectionTable(name = "status")
     @MapKeyJoinColumn(name = "deviceId")
@@ -44,5 +58,23 @@ public class Device implements Serializable  {
         this.currentStatusTitle = currentStatusTitle;
         this.statuses = statuses;
         this.tts = tts;
+    }
+
+    public Device(String signalName, String deviceName, int currentStatusCode,
+                  String currentStatusTitle, Map<Integer, String> statuses, boolean tts,
+                  boolean analog, int lowerBound, int lowCriticalPoint,
+                  int highBound, int highCriticalPoint, UnitType unitType) {
+        this.signalName = signalName;
+        this.deviceName = deviceName;
+        this.currentStatusCode = currentStatusCode;
+        this.currentStatusTitle = currentStatusTitle;
+        this.statuses = statuses;
+        this.tts = tts;
+        this.analog = analog;
+        this.lowerBound = lowerBound;
+        this.lowCriticalPoint = lowCriticalPoint;
+        this.highBound = highBound;
+        this.highCriticalPoint = highCriticalPoint;
+        this.unitType = unitType;
     }
 }
