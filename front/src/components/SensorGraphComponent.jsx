@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button, Form, InputGroup, FormControl } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { newEvents } from "../modules/newEvents";
 import { updateDevices, initDevices } from "../modules/devices";
@@ -21,6 +21,7 @@ function SensorGraphComponent() {
   const devices = useSelector((state) => state.devicesReducer);
 
   const [show, setShow] = useState(false);
+  const [showAnalog, setShowAnalog] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState({
     deviceId: "",
     signalName: "",
@@ -28,6 +29,16 @@ function SensorGraphComponent() {
     currentStatusCode: 0,
     statuses: {},
     tts: false,
+  });
+  const [selectedAnalog, setSelectedAnalog] = useState({
+    deviceId: "",
+    deviceName: "",
+    signalName: "",
+    lowerBound: 0,
+    lowCriticalPoint: 20,
+    highBound: 100,
+    highCriticalPoint: 80,
+    currValue: 40,
   });
   const [selectedStatus, setSelectedStatus] = useState({
     code: 0,
@@ -44,6 +55,7 @@ function SensorGraphComponent() {
   }, []);
 
   const onClickClose = () => setShow(false);
+  const onClickCloseAnalog = () => setShowAnalog(false); // 취소 누르면 원래 선택된 디바이스의 정보로 다시 롤백
   const onClickSensor = (e) => {
     // 클릭한 디바이스 이름 TTS로 읽어주기
     try {
@@ -77,6 +89,18 @@ function SensorGraphComponent() {
     setSelectedStatus({
       code: theCode,
       name: e.target.value,
+    });
+  };
+  const onChangeAnalog = (e) => {
+    setSelectedAnalog({
+      ...selectedAnalog,
+      [e.target.name]:
+        e.target.name === "currValue" &&
+        e.target.value < selectedAnalog.lowCriticalPoint
+          ? selectedAnalog.lowCriticalPoint
+          : e.target.value > selectedAnalog.highCriticalPoint
+          ? selectedAnalog.highCriticalPoint
+          : e.target.value,
     });
   };
 
@@ -137,29 +161,6 @@ function SensorGraphComponent() {
         axios.put("/device/tts", sendData).catch((err) => console.log(err));
       })
       .catch((err) => console.log(err));
-
-    // Promise.all(sendData.map((data) => axios.put("/device/control", data)))
-    //   .then((result) => {
-    //     console.log(result);
-    //     result = result.map((inner, i) => {
-    //       return {
-    //         // timestamp : inner.어쩌고저쩌고
-    //         createDate: sendData[i].createDate,
-    //         id: inner.data.deviceId,
-    //         name: inner.data.deviceName,
-    //         signalName: inner.data.signalName,
-    //         status: inner.data.statuses[inner.data.currentStatusCode],
-    //         statusCode: inner.data.currentStatusCode,
-    //         TTS: `${inner.data.tts}`,
-    //         blink: true,
-    //         checked: false,
-    //       };
-    //     });
-    //     dispatch(newEvents(result));
-    //     // 실제 디바이스의 상태들도 변경
-    //     dispatch(updateDevices(result));
-    //   })
-    //   .catch((err) => console.log(err));
     onClickClose();
     setSelectedDevice({
       deviceId: "",
@@ -175,6 +176,11 @@ function SensorGraphComponent() {
     });
   };
 
+  const onClickAnalog = (e) => {
+    setShowAnalog(true);
+    console.log(e.target);
+  };
+
   return (
     <div>
       <h1 className="title">Devices</h1>
@@ -185,7 +191,9 @@ function SensorGraphComponent() {
               device && (
                 <Button
                   variant={sensorTheme[index % 6]}
-                  onClick={onClickSensor}
+                  onClick={(e) => {
+                    device.analog ? onClickAnalog(e) : onClickSensor(e);
+                  }}
                   key={device.deviceId}
                   name={index}
                 >
@@ -194,7 +202,11 @@ function SensorGraphComponent() {
               )
           )}
       </div>
+      <Button variant={sensorTheme[0]} onClick={onClickAnalog} name={0}>
+        아날로그 센서
+      </Button>
 
+      {/* 상태 모달 창 */}
       <Modal show={show} onHide={() => {}}>
         <Modal.Header>
           <Modal.Title>{selectedDevice.deviceName}</Modal.Title>
@@ -222,6 +234,90 @@ function SensorGraphComponent() {
             상태 제어
           </Button>
           <Button variant="secondary" onClick={onClickClose}>
+            닫기
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* 아날로그 모달 창 */}
+      <Modal show={showAnalog} onHide={() => {}}>
+        <Modal.Header>
+          <Modal.Title>{selectedAnalog.deviceName}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div>Signal Name : {selectedAnalog.signalName}</div>
+          <br />
+          <Form.Group>
+            <Form.Label>수치</Form.Label>
+            <InputGroup className="mb-3">
+              <InputGroup.Prepend>
+                <InputGroup.Text>high bound</InputGroup.Text>
+              </InputGroup.Prepend>
+              <FormControl
+                type="number"
+                placeholder="high bound"
+                name="highBound"
+                value={selectedAnalog.highBound}
+                onChange={onChangeAnalog}
+              />
+            </InputGroup>
+            <InputGroup className="mb-3">
+              <InputGroup.Prepend>
+                <InputGroup.Text>high critical point</InputGroup.Text>
+              </InputGroup.Prepend>
+              <FormControl
+                type="number"
+                placeholder="high critical point"
+                name="highCriticalPoint"
+                value={selectedAnalog.highCriticalPoint}
+                onChange={onChangeAnalog}
+              />
+            </InputGroup>
+
+            <InputGroup className="mb-3">
+              <InputGroup.Prepend>
+                <InputGroup.Text>low critical point</InputGroup.Text>
+              </InputGroup.Prepend>
+              <FormControl
+                type="number"
+                placeholder="low critical point"
+                name="lowCriticalPoint"
+                value={selectedAnalog.lowCriticalPoint}
+                onChange={onChangeAnalog}
+              />
+            </InputGroup>
+            <InputGroup className="mb-3">
+              <InputGroup.Prepend>
+                <InputGroup.Text>lower bound</InputGroup.Text>
+              </InputGroup.Prepend>
+              <FormControl
+                type="number"
+                placeholder="lower bound"
+                name="lowerBound"
+                value={selectedAnalog.lowerBound}
+                onChange={onChangeAnalog}
+              />
+            </InputGroup>
+
+            <InputGroup className="mb-3">
+              <InputGroup.Prepend>
+                <InputGroup.Text>current value</InputGroup.Text>
+              </InputGroup.Prepend>
+              <FormControl
+                type="number"
+                placeholder="current value"
+                name="currValue"
+                value={selectedAnalog.currValue}
+                onChange={onChangeAnalog}
+              />
+            </InputGroup>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={onClickEvent}>
+            수치 변경
+          </Button>
+          <Button variant="secondary" onClick={onClickCloseAnalog}>
             닫기
           </Button>
         </Modal.Footer>

@@ -31,7 +31,7 @@ public class MainController {
         String[] nextLine;
         List<Device> devices = new ArrayList<>();
         String signalName, type, name, status;
-        while ((nextLine = reader.readNext()) != null) {   //
+        while ((nextLine = reader.readNext()) != null) {
             Map<Integer, String> map = new TreeMap<>();
             if (nextLine.length <= 1) continue;
             type = nextLine[0];
@@ -118,8 +118,9 @@ public class MainController {
         Process pc = null;
 
         try {
-            System.out.println("python "+ sapiRealPath + " " + deviceName + "가선택되었습니다");
-            pc = rt.exec("python "+ sapiRealPath + " " + deviceName + "가선택되었습니다");
+            String theString = "\"" + deviceName + "가선택되었습니다" + "\"";
+            System.out.println("python "+ sapiRealPath + " " + theString);
+            pc = rt.exec("python "+ sapiRealPath + " " + theString);
             BufferedReader stdin = new BufferedReader(new InputStreamReader(pc.getInputStream()));
         } catch (Exception e) {
             e.printStackTrace();
@@ -163,6 +164,20 @@ public class MainController {
             deviceInDB.setCurrentStatusCode(device.getCurrentStatusCode());
             deviceInDB.setCurrentStatusTitle(deviceInDB.getStatuses().get(device.getCurrentStatusCode()));
             deviceRepository.save(deviceInDB);
+            result.add(deviceInDB);
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+    @PutMapping("/device/tts")
+    public ResponseEntity<Object> ttsEvent(@RequestBody List<DeviceDTO.Update> devices) throws IOException, InterruptedException {
+        List<Device> result = new ArrayList<>();
+        int theIndex = 0;
+        for (DeviceDTO.Update device : devices) {
+            theIndex += 1;
+            if(!(theIndex == 1 || theIndex == devices.size())){
+                continue;
+            }
+            Device deviceInDB = deviceRepository.findById(device.getDeviceId()).get();
             result.add(deviceInDB);
             final String sapiRealPath = sapiPath.getURL().getPath().substring(1);
             Runtime rt = Runtime.getRuntime();

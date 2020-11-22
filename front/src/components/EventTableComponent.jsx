@@ -81,10 +81,10 @@ function EventTableComponent() {
         dispatch(newEventAction(sendData));
 
         // TTS 요청
-        // axios
-        //   .put("/device/tts", sendData)
-        //   .then(() => setTtsEnd(true))
-        //   .catch((err) => console.log(err));
+        axios
+          .put("/device/analogueTTS", sendData)
+          .then(() => setTtsEnd(true))
+          .catch((err) => console.log(err));
         setTimeout(() => setTtsEnd(!ttsEnd), 1400);
       } else {
         // 상태 데이터의 감시 이벤트 발생

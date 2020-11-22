@@ -9,6 +9,9 @@ td {
   border: 1px solid black;
   border-top: none;
 }
+th {
+  text-align: center;
+}
 
 .tableOuter {
   border-top: 1px solid black;
