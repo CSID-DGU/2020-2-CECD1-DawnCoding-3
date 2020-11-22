@@ -30,6 +30,7 @@ function SensorGraphComponent() {
     statuses: {},
     tts: false,
   });
+
   const [selectedAnalog, setSelectedAnalog] = useState({
     deviceId: "",
     deviceName: "",
@@ -40,6 +41,7 @@ function SensorGraphComponent() {
     highCriticalPoint: 80,
     currValue: 40,
   });
+
   const [selectedStatus, setSelectedStatus] = useState({
     code: 0,
     name: "",
@@ -55,6 +57,7 @@ function SensorGraphComponent() {
   }, []);
 
   const onClickClose = () => setShow(false);
+
   const onClickCloseAnalog = () => setShowAnalog(false); // 취소 누르면 원래 선택된 디바이스의 정보로 다시 롤백
   const onClickSensor = (e) => {
     // 클릭한 디바이스 이름 TTS로 읽어주기
@@ -91,6 +94,7 @@ function SensorGraphComponent() {
       name: e.target.value,
     });
   };
+
   const onChangeAnalog = (e) => {
     setSelectedAnalog({
       ...selectedAnalog,
@@ -191,9 +195,11 @@ function SensorGraphComponent() {
               device && (
                 <Button
                   variant={sensorTheme[index % 6]}
+
                   onClick={(e) => {
                     device.analog ? onClickAnalog(e) : onClickSensor(e);
                   }}
+
                   key={device.deviceId}
                   name={index}
                 >

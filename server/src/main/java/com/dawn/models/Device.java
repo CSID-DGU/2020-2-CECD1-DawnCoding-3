@@ -1,5 +1,6 @@
 package com.dawn.models;
 
+import javassist.bytecode.stackmap.TypeData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -28,7 +30,12 @@ public class Device implements Serializable  {
 
     private boolean tts;
 
-    private boolean analog;
+
+    private boolean analog = false;
+
+    private boolean inDeadband = false;
+
+    private int currValue = 0;
 
     private int lowerBound = 0;
 
@@ -46,8 +53,14 @@ public class Device implements Serializable  {
     @CollectionTable(name = "status")
     @MapKeyJoinColumn(name = "deviceId")
     @Column(name = "statuses")
-    private Map<Integer, String> statuses;
+    private Map<Integer, String> statuses = new HashMap<>();
 
+    public static Device ofAnalog(String signalName, String deviceName, int lowerBound, int lowCriticalPoint,
+                           int highBound, int highCriticalPoint, UnitType unitType, boolean tts) {
+        return new Device(
+                signalName, deviceName, lowerBound, lowCriticalPoint,
+                highBound, highCriticalPoint, unitType, true, tts);
+    }
     public Device() {}
 
     public Device(String signalName, String deviceName, int currentStatusCode,
@@ -57,6 +70,18 @@ public class Device implements Serializable  {
         this.currentStatusCode = currentStatusCode;
         this.currentStatusTitle = currentStatusTitle;
         this.statuses = statuses;
+        this.tts = tts;
+    }
+    public Device(String signalName, String deviceName,  int lowerBound, int lowCriticalPoint,
+                  int highBound, int highCriticalPoint, UnitType unitType, boolean analog, boolean tts) {
+        this.signalName = signalName;
+        this.deviceName = deviceName;
+        this.lowerBound = lowerBound;
+        this.lowCriticalPoint = lowCriticalPoint;
+        this.highBound = highBound;
+        this.highCriticalPoint = highCriticalPoint;
+        this.unitType = unitType;
+        this.analog = analog;
         this.tts = tts;
     }
 
@@ -77,4 +102,9 @@ public class Device implements Serializable  {
         this.highCriticalPoint = highCriticalPoint;
         this.unitType = unitType;
     }
+
+    public static boolean isSafeZone(Device device, int newValue) {
+        return !(newValue >= device.getHighCriticalPoint() || newValue <= device.getLowCriticalPoint());
+    }
+
 }

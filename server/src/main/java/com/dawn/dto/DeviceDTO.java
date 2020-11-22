@@ -10,6 +10,7 @@ public class DeviceDTO {
     public static class Update {
         private long deviceId;
         private int currentStatusCode;
+        private int currValue;
         private boolean tts;
     }
 
