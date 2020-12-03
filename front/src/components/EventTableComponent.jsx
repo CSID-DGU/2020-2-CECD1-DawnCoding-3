@@ -9,7 +9,7 @@ import "./EventTableStyle.css";
 import { newEvents as newEventAction } from "../modules/newEvents";
 import { updateDevices, updateAnalog } from "../modules/devices";
 
-const StatusDeviceNum = 7;
+const StatusDeviceNum = 7; // 상태 정보를 갖는 디바이스의 개수(임의 설정)
 
 function EventTableComponent() {
   const dispatch = useDispatch();
