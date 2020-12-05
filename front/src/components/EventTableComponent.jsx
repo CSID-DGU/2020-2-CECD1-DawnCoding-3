@@ -125,6 +125,7 @@ function EventTableComponent() {
           currValue: theLimit,
           tts: true,
         });
+
         axios
           .put("/device", sendData)
           .then((res) => {
@@ -142,7 +143,6 @@ function EventTableComponent() {
                 checked: false,
               },
             ];
-            console.log(theResult);
 
             dispatch(newEventAction(result));
             dispatch(
@@ -166,12 +166,27 @@ function EventTableComponent() {
         const theSelectedIndex = Math.floor(Math.random() * 7);
         const theDate = new Date();
         const sendData = [];
+        const settingData = [];
         const selectedDevice = {
           createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${theDate.getMilliseconds()}`,
           deviceId: devices[theSelectedIndex].deviceId,
-          currentStatusCode: devices[theSelectedIndex].code,
+          currentStatusCode: devices[theSelectedIndex].currentStatusCode,
           tts: devices[theSelectedIndex].tts,
         };
+        settingData.push({
+          createDate: selectedDevice.createDate,
+          id: selectedDevice.deviceId,
+          name: devices[theSelectedIndex].deviceName,
+          signalName: devices[theSelectedIndex].signalName,
+          status:
+            devices[theSelectedIndex].statuses[
+              selectedDevice.currentStatusCode
+            ],
+          statusCode: selectedDevice.currentStatusCode,
+          TTS: selectedDevice.tts,
+          blink: true,
+          checked: false,
+        });
         sendData.push(selectedDevice);
         // 총 4~5개의 센서 상태가 한 번에 변함
         const moreEventsNumber = 2 + Math.floor(Math.random() * 3);
@@ -184,7 +199,7 @@ function EventTableComponent() {
                 ((selectedDevice.deviceId + i) % StatusDeviceNum) + 1
             );
             const theDate = new Date();
-            sendData.push({
+            const nextData = {
               createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${
                 theDate.getMilliseconds() + Math.floor(Math.random() * 10)
               }`,
@@ -193,43 +208,34 @@ function EventTableComponent() {
                 (moreEventDevice.currentStatusCode + 1) %
                 Object.keys(moreEventDevice.statuses).length,
               tts: moreEventDevice.tts,
+            };
+            sendData.push(nextData);
+            settingData.push({
+              createDate: nextData.createDate,
+              id: moreEventDevice.deviceId,
+              name: moreEventDevice.deviceName,
+              signalName: moreEventDevice.signalName,
+              status: moreEventDevice.statuses[nextData.currentStatusCode],
+              statusCode: nextData.currentStatusCode,
+              TTS: nextData.tts,
+              blink: true,
+              checked: false,
             });
           });
         // 각각 변한 데이터를 put 요청
-        axios
-          .put("/device", sendData)
-          .then(({ data: result }) => {
-            result = result.map((inner, i) => {
-              return {
-                // timestamp : inner.어쩌고저쩌고
-                createDate: sendData[i].createDate,
-                id: inner.deviceId,
-                name: inner.deviceName,
-                signalName: inner.signalName,
-                status: inner.statuses[inner.currentStatusCode],
-                statusCode: inner.currentStatusCode,
-                TTS: `${inner.tts}`,
-                blink: true,
-                checked: false,
-              };
-            });
-            dispatch(newEventAction(result));
-            // 실제 디바이스의 상태들도 변경
-            dispatch(updateDevices(result));
-            // TTS 요청
-            axios
-              .put("/device/tts", sendData)
-              .then((res) => {
-                console.log(res);
-
-                setTtsEnd(!ttsEnd);
-              })
-              .catch((err) => console.log(err));
+        sendData
+          .reduce((prevProm, data) => {
+            return prevProm.then(() => axios.put("/device", data));
+          }, Promise.resolve())
+          .then(() => {
+            setTtsEnd(!ttsEnd);
           })
-          .catch((err) => console.log(err));
+          .catch((err) => {
+            console.error(err);
+          });
+        dispatch(newEventAction(settingData)); // 이벤트 테이블
+        dispatch(updateDevices(settingData)); // 실제 디바이스의 상태들도 변경
       }
-      // 우선 이벤트 발생 되면 서버에 이벤트 기록하고 감시 이벤트 발생을 중지
-      // 감시 이벤트에서 TTS 읽어주기가 끝나면 다시 setTimeout 실행
     }, theTimeSeed * 1000);
   };
 
