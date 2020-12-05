@@ -7,8 +7,6 @@ import "./SensorStyle.css";
 
 import axios from "axios";
 
-const StatusDeviceNum = 7;
-
 const sensorTheme = [
   "outline-primary",
   "outline-secondary",
@@ -113,7 +111,7 @@ function SensorGraphComponent() {
       createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${theDate.getMilliseconds()}`,
       deviceId: selectedDevice.deviceId,
       currentStatusCode: originalData.currentStatusCode,
-      tts: true,
+      tts: originalData.tts,
     };
     sendData.push(theData);
 
@@ -130,23 +128,8 @@ function SensorGraphComponent() {
           currentStatusCode:
             (+originalData.currentStatusCode + i + 1) %
             Object.entries(originalData.statuses).length,
-          tts: true,
+          tts: originalData.tts,
         });
-        // const moreEventDevice = devices.find(
-        //   (device) =>
-        //     device.deviceId === ((theData.deviceId + i) % StatusDeviceNum) + 1
-        // );
-        // const theDate = new Date();
-        // sendData.push({
-        //   createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${
-        //     theDate.getMilliseconds() + Math.floor(Math.random() * 10)
-        //   }`,
-        //   deviceId: moreEventDevice.deviceId,
-        //   currentStatusCode:
-        //     (moreEventDevice.currentStatusCode + 1) %
-        //     Object.keys(moreEventDevice.statuses).length,
-        //   tts: moreEventDevice.tts,
-        // });
       });
 
     // 최종적으로 선택한 상태로 변경
@@ -156,41 +139,37 @@ function SensorGraphComponent() {
       }`,
       deviceId: theData.deviceId,
       currentStatusCode: selectedStatus.code,
-      tts: true,
+      tts: originalData.tts,
     });
 
-    // 각각 변한 데이터를 put 요청
-    axios
-      .put("/device", sendData)
-      .then(() => {
-        const result = [];
-        const theSelected = devices.find(
-          (v) => v.deviceId === selectedDevice.deviceId
-        );
-        sendData.forEach((v) => {
-          result.push({
-            createDate: v.createDate,
-            id: v.deviceId,
-            name: theSelected.deviceName,
-            signalName: theSelected.signalName,
-            status: theSelected.statuses[v.currentStatusCode],
-            statusCode: v.currentStatusCode,
-            TTS: `${v.tts}`,
-            blink: true,
-            checked: false,
-          });
-        });
+    // TTS 요청
+    sendData
+      .reduce((prevProm, data) => {
+        return prevProm.then(() => axios.put("/device", data));
+      }, Promise.resolve())
+      .catch((err) => {
+        console.error(err);
+      });
 
-        dispatch(newEvents(result));
-        // 실제 디바이스의 상태들도 변경
-        dispatch(updateDevices(result));
-        // TTS 요청
-        axios
-          .put("/device/tts", sendData)
+    const result = [];
+    sendData.forEach((v) => {
+      result.push({
+        createDate: v.createDate,
+        id: v.deviceId,
+        name: selectedDevice.deviceName,
+        signalName: selectedDevice.signalName,
+        status: selectedDevice.statuses[v.currentStatusCode],
+        statusCode: v.currentStatusCode,
+        TTS: `${v.tts}`,
+        blink: true,
+        checked: false,
+      });
+    });
 
-          .catch((err) => console.log(err));
-      })
-      .catch((err) => console.log(err));
+    dispatch(newEvents(result));
+    // 실제 디바이스의 상태들도 변경
+    dispatch(updateDevices(result));
+
     setSelectedDevice({
       deviceId: "",
       signalName: "",
@@ -208,7 +187,6 @@ function SensorGraphComponent() {
 
   const onClickAnalog = (e) => {
     setShowAnalog(true);
-    console.log(devices[e.target.name]);
     setSelectedAnalog({
       deviceId: devices[e.target.name].deviceId,
       deviceName: devices[e.target.name].deviceName,

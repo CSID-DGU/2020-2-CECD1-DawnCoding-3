@@ -62,7 +62,7 @@ public class MainController {
             }
             Device device =
                     new Device(signalName, name, 0, "default", map, true,
-                               true, 20, 0, 80, 100, UnitType.NONE);
+                            true, 20, 0, 80, 100, UnitType.NONE);
             deviceList.add(device);
         }
         deviceRepository.saveAll(deviceList);
@@ -72,54 +72,63 @@ public class MainController {
     @GetMapping("/init2")
     public String initData2() {
         Map<Integer, String> device1Status = new HashMap<>();
-        device1Status.put(0, "정상"); device1Status.put(1, "이상");
+        device1Status.put(0, "정상");
+        device1Status.put(1, "이상");
         Device device1 = new Device("ABC1234$1", "(128KV) 함선보호", 0, "정상", device1Status, false);
 
         Map<Integer, String> device5Status = new HashMap<>();
-        device5Status.put(0, "정상"); device5Status.put(1, "이상");
+        device5Status.put(0, "정상");
+        device5Status.put(1, "이상");
         Device device5 = new Device("ABC1234$2", "(128KV) 함선보호", 0, "정상", device5Status, true);
 
         Map<Integer, String> device6Status = new HashMap<>();
-        device6Status.put(0, "정상"); device6Status.put(1, "이상");
+        device6Status.put(0, "정상");
+        device6Status.put(1, "이상");
         Device device7 = new Device("ABC1234$3", "(128KV) 함선보호", 0, "정상", device6Status, true);
 
         Map<Integer, String> device2Status = new HashMap<>();
-        device2Status.put(0, "열림"); device2Status.put(1, "닫힘");
-        device2Status.put(2, "정상"); device2Status.put(3, "비정상");
+        device2Status.put(0, "열림");
+        device2Status.put(1, "닫힘");
+        device2Status.put(2, "정상");
+        device2Status.put(3, "비정상");
         Device device2 = new Device("HRDP3332$AT$1", "3상 전류 LEGENO 통지반", 0, device2Status.get(0), device2Status, false);
 
         Map<Integer, String> device8Status = new HashMap<>();
-        device8Status.put(0, "열림"); device8Status.put(1, "닫힘");
-        device8Status.put(2, "정상"); device8Status.put(3, "비정상");
+        device8Status.put(0, "열림");
+        device8Status.put(1, "닫힘");
+        device8Status.put(2, "정상");
+        device8Status.put(3, "비정상");
         Device device8 = new Device("HRDP3332$AT$2", "3상 전류 LEGENO 통지반", 0, device8Status.get(0), device8Status, true);
 
         Map<Integer, String> device3Status = new HashMap<>();
-        device3Status.put(0, "ON"); device3Status.put(1, "OFF");
+        device3Status.put(0, "ON");
+        device3Status.put(1, "OFF");
         Device device3 = new Device("PPAP$1", "고장 주파수 발생", 0, device3Status.get(1), device3Status, false);
 
         Map<Integer, String> device4Status = new HashMap<>();
-        device4Status.put(0, "잠김"); device4Status.put(1, "열림");
+        device4Status.put(0, "잠김");
+        device4Status.put(1, "열림");
         Device device4 = new Device("RD24A$1", "2MTR NARUTO SASUKE", 0, device4Status.get(1), device4Status, true);
         List<Device> devices = Arrays.asList(device1, device2, device3, device4, device5, device7, device8);
         List<Device> adevices = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            Device newDevice = Device.ofAnalog("NCK2018$"+(i+1), "2상 계통 POT BINGSU", 0, 20, 100, 80, UnitType.HUMIDIY, true);
+            Device newDevice = Device.ofAnalog("NCK2018$" + (i + 1), "2상 계통 POT BINGSU", 0, 20, 100, 80, UnitType.HUMIDIY, true);
             adevices.add(newDevice);
         }
         for (int i = 0; i < 10; i++) {
-            Device newDevice = Device.ofAnalog("UNCPT2018$"+(i+1), "24K 변전 계통", 0, 20, 100, 80, UnitType.TEMPERATURE, true);
+            Device newDevice = Device.ofAnalog("UNCPT2018$" + (i + 1), "24K 변전 계통", 0, 20, 100, 80, UnitType.TEMPERATURE, true);
             adevices.add(newDevice);
         }
         for (int i = 0; i < 10; i++) {
-            Device newDevice = Device.ofAnalog("TMR1118$"+(i+1), "128K 영상분 제어", 0, 20, 100, 80, UnitType.TEMPERATURE, true);
+            Device newDevice = Device.ofAnalog("TMR1118$" + (i + 1), "128K 영상분 제어", 0, 20, 100, 80, UnitType.TEMPERATURE, true);
             adevices.add(newDevice);
         }
         for (int i = 0; i < 10; i++) {
-            Device newDevice = Device.ofAnalog("UNCPT$at$1996$"+(i+1), "128K 영상분 제어", 0, 20, 100, 80, UnitType.TEMPERATURE, true);
+            Device newDevice = Device.ofAnalog("UNCPT$at$1996$" + (i + 1), "128K 영상분 제어", 0, 20, 100, 80, UnitType.TEMPERATURE, true);
             adevices.add(newDevice);
         }
         for (int i = 0; i < 10; i++) {
-            Device newDevice = Device.ofAnalog("ACP$at$AA$"+(i+1), "UVD CHICKEN", 0, 20, 100, 80, UnitType.HUMIDIY, true);
+            Device newDevice = Device.ofAnalog("ACP$at$AA$" + (i + 1), "UVD CHICKEN", 0, 20, 100, 80, UnitType.HUMIDIY, true);
             adevices.add(newDevice);
         }
         deviceRepository.saveAll(devices);
@@ -146,8 +155,8 @@ public class MainController {
         Process pc = null;
 
         try {
-            System.out.println("python "+ sapiRealPath + " \"" + deviceName + "가,선택되었습니다\"");
-            pc = rt.exec("python "+ sapiRealPath + " \"" + deviceName + "가,선택되었습니다\"");
+            System.out.println("python " + sapiRealPath + " \"" + deviceName + "가,선택되었습니다\"");
+            pc = rt.exec("python " + sapiRealPath + " \"" + deviceName + "가,선택되었습니다\"");
             BufferedReader stdin = new BufferedReader(new InputStreamReader(pc.getInputStream()));
         } catch (Exception e) {
             e.printStackTrace();
@@ -165,8 +174,8 @@ public class MainController {
         Process pc = null;
         try {
             message = message.replaceAll(" ", ",");
-            System.out.println("python "+ sapiRealPath + " " + message);
-            pc = rt.exec("python "+ sapiRealPath + " \"" +  message);
+            System.out.println("python " + sapiRealPath + " " + message);
+            pc = rt.exec("python " + sapiRealPath + " \"" + message);
             BufferedReader stdin = new BufferedReader(new InputStreamReader(pc.getInputStream()));
         } catch (Exception e) {
             e.printStackTrace();
@@ -178,90 +187,111 @@ public class MainController {
     }
 
     @PutMapping("/device")
-    public ResponseEntity<Object> ttsEvent(@RequestBody List<DeviceDTO.Update> devices) throws IOException, InterruptedException {
-        List<Device> result = new ArrayList<>();
-        for (DeviceDTO.Update device : devices) {
-            Device deviceInDB = deviceRepository.findById(device.getDeviceId()).get();
-            if (deviceInDB.isAnalog()) {
-                deviceInDB.setCurrValue(device.getCurrValue());
-                deviceRepository.save(deviceInDB);
-                result.add(deviceInDB);
-            } else {
+    public ResponseEntity<Object> triggerEventToDevice(@RequestBody DeviceDTO.Update device) throws Exception {
+        Device deviceInDB = deviceRepository.findById(device.getDeviceId()).get();
+        if (deviceInDB.isAnalog()) {
+            System.out.println("----------------------------------------");
+            System.out.println(deviceInDB.isInDeadband());
+            System.out.println(Device.isSafeZone(deviceInDB, device.getCurrValue()));
+            System.out.println(device.getCurrValue());
+            System.out.println(deviceInDB.getHighCriticalPoint());
+
+            deviceInDB.setCurrValue(device.getCurrValue());
+            deviceRepository.save(deviceInDB);
+
+            if (!deviceInDB.isInDeadband() && (!Device.isSafeZone(deviceInDB, device.getCurrValue()))) {
+                String ttsMessage = null;
+                if (device.getCurrValue() >= deviceInDB.getHighCriticalPoint()) {
+                    ttsMessage = deviceInDB.getDeviceName() + "의 계측값이 " + device.getCurrValue() + "으로 상한치를 초과하였습니다";
+                } else {
+                    ttsMessage = deviceInDB.getDeviceName() + "의 계측값이 " + device.getCurrValue() + "으로 하한치를 초과하였습니다";
+                }
+                deviceInDB.setInDeadband(true);
+//                runSapi(ttsMessage);
+
+            } else if (deviceInDB.isInDeadband() && Device.isSafeZone(deviceInDB, device.getCurrValue())) {
+                String ttsMessage = deviceInDB.getDeviceName() + "의 계측값이 " + device.getCurrValue() + "정상치로 복귀했습니다";
+                deviceInDB.setInDeadband(false);
+//                runSapi(ttsMessage);
+            }
+        } else {
+            try {
+                String ttsMessage = deviceInDB.getDeviceName() + "의 상태가 " + deviceInDB.getCurrentStatusTitle() + " 입니다";
                 deviceInDB.setCurrentStatusCode(device.getCurrentStatusCode());
                 deviceInDB.setCurrentStatusTitle(deviceInDB.getStatuses().get(device.getCurrentStatusCode()));
                 deviceRepository.save(deviceInDB);
-                result.add(deviceInDB);
+//                runSapi(ttsMessage);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new ResponseEntity<>("예외가 발생했습니다: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(deviceInDB, HttpStatus.OK);
     }
 
-    @PutMapping("/device/tts")
-    public ResponseEntity<Object> triggerEventToDevice(@RequestBody List<DeviceDTO.Update> devices) throws Exception {
-        List<Device> result = new ArrayList<>();
-        int theIndex = 0;
-        for (DeviceDTO.Update device : devices) {
-            theIndex += 1;
-            if (!(theIndex == 1 || theIndex == devices.size())) {
-                continue;
-            }
-            Device deviceInDB = deviceRepository.findById(device.getDeviceId()).get();
-            if (deviceInDB.isAnalog()) {
-                System.out.println("----------------------------------------");
-                System.out.println(deviceInDB.isInDeadband());
-                System.out.println(Device.isSafeZone(deviceInDB, device.getCurrValue()));
-                System.out.println(device.getCurrValue());
-                System.out.println(deviceInDB.getHighCriticalPoint());
-
-                if (!deviceInDB.isInDeadband() && (!Device.isSafeZone(deviceInDB, device.getCurrValue()))) {
-                    String ttsMessage = null;
-                    if(device.getCurrValue() >= deviceInDB.getHighCriticalPoint()) {
-                        ttsMessage = deviceInDB.getDeviceName() + "의 계측값이 " +
-                                device.getCurrValue() + "으로 상한치를 초과하였습니다";
-
-                    } else {
-                        ttsMessage = deviceInDB.getDeviceName() + "의 계측값이 " +
-                                device.getCurrValue() + "으로 하한치를 초과하였습니다";
-
-                    }
-                    deviceInDB.setInDeadband(true);
-                    deviceRepository.save(deviceInDB);
-
-                    System.out.println("여기 1번");
-                    runSapi(ttsMessage);
-                } else {
-                    if (deviceInDB.isInDeadband() && Device.isSafeZone(deviceInDB, device.getCurrValue())) {
-                        String ttsMessage = deviceInDB.getDeviceName() + "의 계측값이 " +
-                                device.getCurrValue() + "정상치로 복귀했습니다";
-                        deviceInDB.setInDeadband(false);
-                        deviceRepository.save(deviceInDB);
-
-                        System.out.println("여기 2번");
-                        runSapi(ttsMessage);
-                    } else {
-                        System.out.println("여기3번");
-                        continue;
-                    }
-                }
+//    @PutMapping("/device")
+//    public ResponseEntity<Object> triggerEventToDevice(@RequestBody List<DeviceDTO.Update> devices) throws Exception {
+//        List<Device> result = new ArrayList<>();
+//        int theIndex = 0;
+//        for (DeviceDTO.Update device : devices) {
+//            theIndex += 1;
+//            Device deviceInDB = deviceRepository.findById(device.getDeviceId()).get();
+//            if (deviceInDB.isAnalog()) {
+//                System.out.println("----------------------------------------");
+//                System.out.println(deviceInDB.isInDeadband());
+//                System.out.println(Device.isSafeZone(deviceInDB, device.getCurrValue()));
+//                System.out.println(device.getCurrValue());
+//                System.out.println(deviceInDB.getHighCriticalPoint());
+//
 //                deviceInDB.setCurrValue(device.getCurrValue());
 //                deviceRepository.save(deviceInDB);
-            } else {
-//                deviceInDB.setCurrentStatusCode(device.getCurrentStatusCode());
-//                deviceInDB.setCurrentStatusTitle(deviceInDB.getStatuses().get(device.getCurrentStatusCode()));
-//                deviceRepository.save(deviceInDB);
-//                result.add(deviceInDB);
-
-
-                try {
-                    String ttsMessage = deviceInDB.getDeviceName() + "의 상태가 " +
-                            deviceInDB.getCurrentStatusTitle() + " 입니다";
-                    runSapi(ttsMessage);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return new ResponseEntity<>("예외가 발생했습니다: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-            }
-        }
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+//
+//                if (!deviceInDB.isInDeadband() && (!Device.isSafeZone(deviceInDB, device.getCurrValue()))) {
+//                    String ttsMessage = null;
+//                    if(device.getCurrValue() >= deviceInDB.getHighCriticalPoint()) {
+//                        ttsMessage = deviceInDB.getDeviceName() + "의 계측값이 " +
+//                                device.getCurrValue() + "으로 상한치를 초과하였습니다";
+//
+//                    } else {
+//                        ttsMessage = deviceInDB.getDeviceName() + "의 계측값이 " +
+//                                device.getCurrValue() + "으로 하한치를 초과하였습니다";
+//
+//                    }
+//                    deviceInDB.setInDeadband(true);
+//
+//                    if (theIndex == 1 || theIndex == devices.size()) { // 처음과 끝에만 TTS 읽음 일단
+//                        runSapi(ttsMessage);
+//                    }
+//                } else {
+//                    if (deviceInDB.isInDeadband() && Device.isSafeZone(deviceInDB, device.getCurrValue())) {
+//                        String ttsMessage = deviceInDB.getDeviceName() + "의 계측값이 " +
+//                                device.getCurrValue() + "정상치로 복귀했습니다";
+//                        deviceInDB.setInDeadband(false);
+//
+//                        if (theIndex == 1 || theIndex == devices.size()) { // 처음과 끝에만 TTS 읽음 일단
+//                            runSapi(ttsMessage);
+//                        }
+//                    } else {
+//                        continue;
+//                    }
+//                }
+//            } else {
+//                try {
+//                    String ttsMessage = deviceInDB.getDeviceName() + "의 상태가 " +
+//                            deviceInDB.getCurrentStatusTitle() + " 입니다";
+//                    deviceInDB.setCurrentStatusCode(device.getCurrentStatusCode());
+//                    deviceInDB.setCurrentStatusTitle(deviceInDB.getStatuses().get(device.getCurrentStatusCode()));
+//                    deviceRepository.save(deviceInDB);
+//                    result.add(deviceInDB);
+//                    if (theIndex == 1 || theIndex == devices.size()) { // 처음과 끝에만 TTS 읽음 일단
+//                        runSapi(ttsMessage);
+//                    }
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    return new ResponseEntity<>("예외가 발생했습니다: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//                }
+//            }
+//        }
+//        return new ResponseEntity<>(result, HttpStatus.OK);
+//    }
 }

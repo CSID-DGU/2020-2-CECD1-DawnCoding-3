@@ -17,7 +17,7 @@ th {
   border-top: 1px solid black;
   border-bottom: 1px solid black;
   height: 400px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 .watchBtn {
   position: absolute;
