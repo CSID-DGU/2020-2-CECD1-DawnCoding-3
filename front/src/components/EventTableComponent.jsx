@@ -35,6 +35,12 @@ function EventTableComponent() {
       // eslint-disable-next-line
       .map((v, i) => {
         analogDeviceList.current.push(i + StatusDeviceNum);
+        // 최초에 불러올 때 상한/하한치 넘어선 경우 처리
+        // if(devices[i + StatusDeviceNum].currValue < devices[i + StatusDeviceNum].lowCriticalPoint){
+        //   lowLimitList.current = i + StatusDeviceNum;
+        // } else if(devices[i + StatusDeviceNum].currValue > devices[i + StatusDeviceNum].highCriticalPoint){
+        //   highLimitList.current = i + StatusDeviceNum;
+        // }
       });
   }, [devices]);
 
@@ -80,20 +86,21 @@ function EventTableComponent() {
 
   const makeSetTimeOut = (theTimeSeed) => {
     setTimeout(() => {
-      // const isAnalog = Math.random() >= 0.5 ? true : false;
-      const isAnalog = true;
+      const isAnalog = Math.random() >= 0.5 ? true : false;
       if (isAnalog) {
         // 아날로그 데이터 -> 상한치/하한치를 랜덤하게 선택해서 해당 센서가 상한치/하한치 배열 안에 있다면 복귀 이벤트 발생, 아니면 초과 이벤트 발생
         // status: ["상한치 초과", "상한치 복귀", "하한치 초과", "하한치 복귀"];
         const moreEventsNumber = 2 + Math.floor(Math.random() * 3);
         const theDate = new Date();
         const sendData = [];
+        const settingData = [];
         Array(moreEventsNumber)
           .fill()
           .forEach((v, i) => {
             const isUpper = Math.random() >= 0.5 ? true : false;
             let theId = 0;
             let theLimit = 0;
+            let theIndex = 0;
             let eventStatus = "";
             if (isUpper) {
               // 상한치 초과
@@ -104,7 +111,7 @@ function EventTableComponent() {
                 eventStatus = `상한치 복귀`;
                 theLimit = devices[theId].highCriticalPoint - 5;
               } else {
-                const theIndex = Math.floor(
+                theIndex = Math.floor(
                   Math.random() * analogDeviceList.current.length
                 );
                 theId = analogDeviceList.current[theIndex];
@@ -122,7 +129,7 @@ function EventTableComponent() {
                 theLimit = devices[theId].lowCriticalPoint + 5;
                 eventStatus = `하한치 복귀`;
               } else {
-                const theIndex = Math.floor(
+                theIndex = Math.floor(
                   Math.random() * analogDeviceList.current.length
                 );
                 theLimit = devices[theId].lowCriticalPoint - 4;
@@ -132,51 +139,48 @@ function EventTableComponent() {
                 lowLimitList.current = theId;
               }
             }
-            sendData.push({
+            const sendDataObject = {
               createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${
-                theDate.getMilliseconds() + Math.floor(Math.random() * 10)
+                theDate.getMilliseconds() + 4 * i
               }`,
               deviceId: theId,
               currValue: theLimit,
               tts: true,
+            };
+            sendData.push(sendDataObject);
+            const settingDeviceIndex = devices.findIndex(
+              (v) => v.deviceId === sendDataObject.deviceId
+            );
+            settingData.push({
+              createDate: sendDataObject.createDate,
+              id: sendDataObject.deviceId,
+              name: devices[settingDeviceIndex].deviceName,
+              signalName: devices[settingDeviceIndex].signalName,
+              status: eventStatus,
+              TTS: "true",
+              blink: true,
+              checked: false,
             });
-            // axios
-            //   .put("/device", sendData)
-            //   .then((res) => {
-            //     const theResult = res.data[0];
-
-            //     const result = [
-            //       {
-            //         createDate: sendData[0].createDate,
-            //         id: theResult.deviceId,
-            //         name: theResult.deviceName,
-            //         signalName: theResult.signalName,
-            //         status: eventStatus,
-            //         TTS: `${theResult.tts}`,
-            //         blink: true,
-            //         checked: false,
-            //       },
-            //     ];
-
-            //     dispatch(newEventAction(result));
-            //     dispatch(
-            //       updateAnalog({
-            //         deviceId: theResult.deviceId,
-            //         currValue: theResult.currValue,
-            //       })
-            //     );
-            //     // TTS 요청
-            //     axios
-            //       .put("/device/tts", sendData)
-            //       .then((res) => {
-            //         // console.log(res);
-            //         setTtsEnd(!ttsEnd);
-            //       })
-            //       .catch((err) => console.log(err));
-            //   })
-            //   .catch((err) => console.error(err));
           });
-        console.log(sendData);
+        sendData
+          .reduce((prevProm, data) => {
+            return prevProm.then(() => axios.put("/device", data));
+          }, Promise.resolve())
+          .then(() => {
+            setTtsEnd(!ttsEnd);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+        settingData.forEach((data, i) => {
+          dispatch(
+            updateAnalog({
+              deviceId: data.id,
+              currValue: sendData[i].currValue,
+            })
+          );
+        });
+        dispatch(newEventAction(settingData));
       } else {
         // 상태 데이터의 감시 이벤트 발생
         const theSelectedIndex = Math.floor(Math.random() * StatusDeviceNum);
@@ -199,7 +203,7 @@ function EventTableComponent() {
               selectedDevice.currentStatusCode
             ],
           statusCode: selectedDevice.currentStatusCode,
-          TTS: selectedDevice.tts,
+          TTS: `${selectedDevice.tts}`,
           blink: true,
           checked: false,
         });
@@ -217,7 +221,7 @@ function EventTableComponent() {
             const theDate = new Date();
             const nextData = {
               createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${
-                theDate.getMilliseconds() + Math.floor(Math.random() * 10)
+                theDate.getMilliseconds() + 4 * i
               }`,
               deviceId: moreEventDevice.deviceId,
               currentStatusCode:
@@ -233,7 +237,7 @@ function EventTableComponent() {
               signalName: moreEventDevice.signalName,
               status: moreEventDevice.statuses[nextData.currentStatusCode],
               statusCode: nextData.currentStatusCode,
-              TTS: nextData.tts,
+              TTS: `${nextData.tts}`,
               blink: true,
               checked: false,
             });

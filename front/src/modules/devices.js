@@ -30,7 +30,6 @@ export default function devicesReducer(state = initialState, action) {
       });
       return newDevices;
     case "UPDATE_ANALOG":
-      console.log(action);
       return state.map((v) =>
         v.deviceId === action.deviceId
           ? {

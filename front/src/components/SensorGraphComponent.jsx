@@ -122,7 +122,7 @@ function SensorGraphComponent() {
       .forEach((v, i) => {
         sendData.push({
           createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${
-            theDate.getMilliseconds() + Math.floor(Math.random() * 10)
+            theDate.getMilliseconds() + 4 * i
           }`,
           deviceId: theData.deviceId,
           currentStatusCode:
@@ -135,7 +135,7 @@ function SensorGraphComponent() {
     // 최종적으로 선택한 상태로 변경
     sendData.push({
       createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${
-        theDate.getMilliseconds() + Math.floor(Math.random() * 10)
+        theDate.getMilliseconds() + 4
       }`,
       deviceId: theData.deviceId,
       currentStatusCode: selectedStatus.code,
