@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Form, InputGroup, FormControl } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { newEvents } from "../modules/newEvents";
 import { updateDevices, initDevices, updateAnalog } from "../modules/devices";
 import "./SensorStyle.css";
 
 import axios from "axios";
+import StatusModalComponent from "./ModalWindow/StatusModalComponent";
+import AnalogModalComponent from "./ModalWindow/AnalogModalComponent";
 
 const sensorTheme = [
   "outline-primary",
@@ -210,17 +212,15 @@ function SensorGraphComponent() {
   const onClickValueChange = () => {
     try {
       (async () => {
-        const { data } = await axios.put(`/device`, [
-          {
-            deviceId: selectedAnalog.deviceId,
-            currValue: selectedAnalog.currValue,
-            tts: selectedAnalog.tts,
-          },
-        ]);
+        const { data } = await axios.put(`/device`, {
+          deviceId: selectedAnalog.deviceId,
+          currValue: selectedAnalog.currValue,
+          tts: selectedAnalog.tts,
+        });
         dispatch(
           updateAnalog({
-            deviceId: data[0].deviceId,
-            currValue: data[0].currValue,
+            deviceId: data.deviceId,
+            currValue: data.currValue,
           })
         );
       })();
@@ -253,121 +253,22 @@ function SensorGraphComponent() {
       </div>
 
       {/* 상태 모달 창 */}
-      <Modal show={show} onHide={() => {}}>
-        <Modal.Header>
-          <Modal.Title>{selectedDevice.deviceName}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div>Signal Name : {selectedDevice.signalName}</div>
-          <br />
-          <Form.Group>
-            <Form.Label>상태</Form.Label>
-            <Form.Control
-              onChange={onChangeStatus}
-              as="select"
-              defaultValue={
-                selectedDevice.statuses[selectedDevice.currentStatusCode]
-              }
-            >
-              {Object.entries(selectedDevice.statuses).map((v, index) => (
-                <option key={v[0]}>{v[1]}</option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={onClickEvent}>
-            상태 제어
-          </Button>
-          <Button variant="secondary" onClick={onClickClose}>
-            닫기
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <StatusModalComponent
+        show={show}
+        selectedDevice={selectedDevice}
+        onChangeStatus={onChangeStatus}
+        onClickEvent={onClickEvent}
+        onClickClose={onClickClose}
+      />
 
       {/* 아날로그 모달 창 */}
-      <Modal show={showAnalog} onHide={() => {}}>
-        <Modal.Header>
-          <Modal.Title>{selectedAnalog.deviceName}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div>Signal Name : {selectedAnalog.signalName}</div>
-          <br />
-          <Form.Group>
-            <Form.Label>수치</Form.Label>
-            <InputGroup className="mb-3">
-              <InputGroup.Prepend>
-                <InputGroup.Text>high bound</InputGroup.Text>
-              </InputGroup.Prepend>
-              <FormControl
-                type="number"
-                placeholder="high bound"
-                name="highBound"
-                readOnly
-                value={selectedAnalog.highBound}
-              />
-            </InputGroup>
-            <InputGroup className="mb-3">
-              <InputGroup.Prepend>
-                <InputGroup.Text>high critical point</InputGroup.Text>
-              </InputGroup.Prepend>
-              <FormControl
-                type="number"
-                placeholder="high critical point"
-                name="highCriticalPoint"
-                readOnly
-                value={selectedAnalog.highCriticalPoint}
-              />
-            </InputGroup>
-
-            <InputGroup className="mb-3">
-              <InputGroup.Prepend>
-                <InputGroup.Text>low critical point</InputGroup.Text>
-              </InputGroup.Prepend>
-              <FormControl
-                type="number"
-                placeholder="low critical point"
-                name="lowCriticalPoint"
-                readOnly
-                value={selectedAnalog.lowCriticalPoint}
-              />
-            </InputGroup>
-            <InputGroup className="mb-3">
-              <InputGroup.Prepend>
-                <InputGroup.Text>lower bound</InputGroup.Text>
-              </InputGroup.Prepend>
-              <FormControl
-                type="number"
-                placeholder="lower bound"
-                name="lowerBound"
-                readOnly
-                value={selectedAnalog.lowerBound}
-              />
-            </InputGroup>
-
-            <InputGroup className="mb-3">
-              <InputGroup.Prepend>
-                <InputGroup.Text>current value</InputGroup.Text>
-              </InputGroup.Prepend>
-              <FormControl
-                type="number"
-                placeholder="current value"
-                name="currValue"
-                value={selectedAnalog.currValue}
-                onChange={onChangeAnalog}
-              />
-            </InputGroup>
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={onClickValueChange}>
-            수치 변경
-          </Button>
-          <Button variant="secondary" onClick={onClickCloseAnalog}>
-            닫기
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <AnalogModalComponent
+        showAnalog={showAnalog}
+        selectedAnalog={selectedAnalog}
+        onChangeAnalog={onChangeAnalog}
+        onClickValueChange={onClickValueChange}
+        onClickCloseAnalog={onClickCloseAnalog}
+      />
     </div>
   );
 }
