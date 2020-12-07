@@ -209,6 +209,7 @@ function SensorGraphComponent() {
       console.error(err);
     }
   };
+
   const onClickValueChange = () => {
     try {
       (async () => {

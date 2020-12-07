@@ -269,7 +269,7 @@ function EventTableComponent() {
   };
 
   return (
-    <div>
+    <>
       <h1 className="title">이벤트 테이블</h1>
       <div className="tableOuter">
         <table>
@@ -305,7 +305,7 @@ function EventTableComponent() {
         멈춤
       </Button>
       <SensorGraphComponent />
-    </div>
+    </>
   );
 }
 
