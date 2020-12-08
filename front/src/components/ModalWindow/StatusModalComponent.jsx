@@ -13,9 +13,8 @@ function StatusModalComponent({
   const [orderValue, setOrderValue] = useState([])
 
   useEffect(() => {
-    // 현재 단순히 index로 우선순위 처리 -> 나중에 변경 필요
-    const newOrderValue = Object.entries(selectedDevice.statuses).map((v, i) => i)
-    setOrderValue(newOrderValue);
+    // 현재 단순히 index로 우선순위 처리 -> 나중에 변경 필요 -> 진짜 order 값이 필요
+    setOrderValue([])
   }, [selectedDevice])
 
   const onClickChangeMode = () => {
