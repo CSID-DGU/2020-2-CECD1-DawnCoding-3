@@ -35,6 +35,10 @@ from six.moves import queue
 
 import win32com.client
 import sys
+import os
+
+credential_path='C:\\Users\\jw969\\Downloads\\speechtotext-295717-144ec58c2381.json'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
 
 # Audio recording parameters
 RATE = 16000
@@ -161,7 +165,7 @@ def listen_print_loop(responses):
             num_chars_printed = 0
 
 
-def main():
+def executeSTT():
     # See http://g.co/cloud/speech/docs/languages
     # for a list of supported languages.
     language_code = "ko-KR"  # a BCP-47 language tag
@@ -187,11 +191,12 @@ def main():
 
         # Now, put the transcription responses to use.
         command = listen_print_loop(responses)
-        print("내 명령어: ", command)
-
+        return command
 
 if __name__ == "__main__":
     tts = win32com.client.Dispatch("SAPI.SpVoice")
     tts.Speak("명령어를 입력해주세요")
-    main()
+    command = executeSTT()
+    result = querySelector(command)
+    print("내 명령어: ", command)
 # [END speech_transcribe_streaming_mic]
