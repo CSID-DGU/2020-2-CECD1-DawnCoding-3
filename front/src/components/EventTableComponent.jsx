@@ -301,6 +301,9 @@ function EventTableComponent() {
           onChange={() => setWatchMode(!watchMode)}
         />
       </Form>
+      <Button className="sttBtn" variant="primary">
+        STT
+      </Button>
       <Button className="stopBtn" variant="danger" onClick={onClickStopBtn}>
         멈춤
       </Button>

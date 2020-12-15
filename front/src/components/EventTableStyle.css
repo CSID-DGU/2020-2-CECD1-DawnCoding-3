@@ -43,6 +43,14 @@ th {
   height: 3rem;
   font-size: 1rem;
 }
+.sttBtn {
+  position: absolute;
+  top: 0;
+  right: 6rem;
+  width: 6rem;
+  height: 3rem;
+  font-size: 1rem;
+}
 .newEvent {
   position: absolute;
   top: 0;

@@ -78,7 +78,7 @@ function StatusModalComponent({
                   <input
                     style={{ width: "100%", border: "none" }}
                     type="text"
-                    value={i}
+                    value={i + 1}
                   />
                 </td>
               </tr>
