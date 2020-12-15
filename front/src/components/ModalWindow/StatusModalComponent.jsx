@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
+import { v4 as uuid } from "uuid";
 
 function StatusModalComponent({
   show,
@@ -9,12 +10,24 @@ function StatusModalComponent({
   onClickClose,
 }) {
   const [changeMode, setChangeMode] = useState(true);
+  const [orderValue, setOrderValue] = useState([]);
+
+  useEffect(() => {
+    // 현재 단순히 index로 우선순위 처리 -> 나중에 변경 필요 -> 진짜 order 값이 필요
+    setOrderValue([]);
+  }, [selectedDevice]);
 
   const onClickChangeMode = () => {
     setChangeMode(!changeMode);
   };
 
   const onClickOrderChange = () => {};
+
+  const onChangeOrderValue = (e) => {
+    setOrderValue(
+      orderValue.map((v, i) => (i === +e.target.name ? e.target.value : v))
+    );
+  };
 
   return changeMode ? (
     <Modal show={show} onHide={() => {}}>
@@ -72,13 +85,15 @@ function StatusModalComponent({
           </thead>
           <tbody>
             {Object.entries(selectedDevice.statuses).map((v, i) => (
-              <tr>
+              <tr key={uuid()}>
                 <td>{v[1]}</td>
                 <td>
                   <input
                     style={{ width: "100%", border: "none" }}
                     type="text"
-                    value={i + 1}
+                    name={i}
+                    value={orderValue[i]}
+                    onChange={onChangeOrderValue}
                   />
                 </td>
               </tr>
