@@ -43,12 +43,15 @@ function StatusModalComponent({
             onChange={onChangeStatus}
             as="select"
             defaultValue={
+              selectedDevice.statuses[selectedDevice.currentStatusCode] &&
               selectedDevice.statuses[selectedDevice.currentStatusCode]
+                .status_name
             }
           >
-            {Object.entries(selectedDevice.statuses).map((v) => (
-              <option key={v[0]}>{v[1]}</option>
-            ))}
+            {selectedDevice.statuses &&
+              selectedDevice.statuses.map(
+                (v) => v && <option key={v.status_key}>{v.status_name}</option>
+              )}
           </Form.Control>
         </Form.Group>
       </Modal.Body>
@@ -84,7 +87,7 @@ function StatusModalComponent({
             </tr>
           </thead>
           <tbody>
-            {Object.entries(selectedDevice.statuses).map((v, i) => (
+            {/* {Object.entries(selectedDevice.statuses).map((v, i) => (
               <tr key={uuid()}>
                 <td>{v[1]}</td>
                 <td>
@@ -97,7 +100,7 @@ function StatusModalComponent({
                   />
                 </td>
               </tr>
-            ))}
+            ))} */}
           </tbody>
         </table>
       </Modal.Body>

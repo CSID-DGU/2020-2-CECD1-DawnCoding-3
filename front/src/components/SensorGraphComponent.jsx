@@ -29,7 +29,7 @@ function SensorGraphComponent() {
     signalName: "",
     deviceName: "",
     currentStatusCode: 0,
-    statuses: {},
+    statuses: [],
     tts: false,
   });
 
@@ -86,10 +86,9 @@ function SensorGraphComponent() {
     });
   };
   const onChangeStatus = (e) => {
-    const theCode = Object.values(selectedDevice.statuses).findIndex(
-      (code) => code === e.target.value
+    const theCode = selectedDevice.statuses.findIndex(
+      (v) => v.status_name === e.target.value
     );
-
     setSelectedStatus({
       code: theCode,
       name: e.target.value,
@@ -160,7 +159,7 @@ function SensorGraphComponent() {
         id: v.deviceId,
         name: selectedDevice.deviceName,
         signalName: selectedDevice.signalName,
-        status: selectedDevice.statuses[v.currentStatusCode],
+        status: selectedDevice.statuses[v.currentStatusCode].status_name,
         statusCode: v.currentStatusCode,
         TTS: `${v.tts}`,
         blink: true,
@@ -177,7 +176,7 @@ function SensorGraphComponent() {
       signalName: "",
       deviceName: "",
       currentStatusCode: 0,
-      statuses: {},
+      statuses: [],
       tts: false,
     });
     setSelectedStatus({

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -49,11 +50,8 @@ public class Device implements Serializable  {
     @Enumerated(EnumType.ORDINAL)
     private UnitType unitType;
 
-    @ElementCollection
-    @CollectionTable(name = "status")
-    @MapKeyJoinColumn(name = "deviceId")
-    @Column(name = "statuses")
-    private Map<Integer, String> statuses = new HashMap<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Status> statuses;
 
     public static Device ofAnalog(String signalName, String deviceName, int lowerBound, int lowCriticalPoint,
                            int highBound, int highCriticalPoint, UnitType unitType, boolean tts) {
@@ -64,7 +62,7 @@ public class Device implements Serializable  {
     public Device() {}
 
     public Device(String signalName, String deviceName, int currentStatusCode,
-                  String currentStatusTitle, Map<Integer, String> statuses, boolean tts) {
+                  String currentStatusTitle, List<Status> statuses, boolean tts) {
         this.signalName = signalName;
         this.deviceName = deviceName;
         this.currentStatusCode = currentStatusCode;
@@ -86,7 +84,7 @@ public class Device implements Serializable  {
     }
 
     public Device(String signalName, String deviceName, int currentStatusCode,
-                  String currentStatusTitle, Map<Integer, String> statuses, boolean tts,
+                  String currentStatusTitle, List<Status> statuses, boolean tts,
                   boolean analog, int lowerBound, int lowCriticalPoint,
                   int highBound, int highCriticalPoint, UnitType unitType) {
         this.signalName = signalName;
