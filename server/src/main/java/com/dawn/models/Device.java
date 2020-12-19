@@ -17,7 +17,7 @@ import java.util.Map;
 @Data
 public class Device implements Serializable  {
 
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "deviceId")
     private long deviceId;
 

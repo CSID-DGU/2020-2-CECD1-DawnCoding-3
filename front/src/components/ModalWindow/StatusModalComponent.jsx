@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
+import { useDispatch } from "react-redux";
+import axios from "axios";
+import { updateStatusOrder } from "../../modules/devices";
 
 function StatusModalComponent({
   show,
@@ -8,29 +11,80 @@ function StatusModalComponent({
   onClickEvent,
   onClickClose,
 }) {
+  const dispatch = useDispatch();
   const [changeMode, setChangeMode] = useState(true);
   const [orderValue, setOrderValue] = useState([]);
 
   useEffect(() => {
-    setOrderValue(
-      selectedDevice.statuses.map((v) => {
-        return v.status_order;
-      })
-    );
+    setOrderValue(selectedDevice.statuses.map((v) => v.status_order));
   }, [selectedDevice]);
+
+  const onChangeOrderValue = (e) => {
+    setOrderValue(
+      orderValue.map((v, i) => (i === +e.target.name ? e.target.value : v))
+    );
+  };
 
   const onClickChangeMode = () => {
     setChangeMode(!changeMode);
   };
 
   const onClickOrderChange = () => {
-    console.log(orderValue);
-  };
+    const originalOrder = selectedDevice.statuses.map((v) => +v.status_order);
+    let noChanged = true;
+    let invalid = false;
+    let wrongOrder = false;
+    const numCount = Array(originalOrder.length).fill(0);
+    orderValue.forEach((v, i) => {
+      if (+v <= originalOrder.length) {
+        numCount[+v - 1] += 1;
+      }
+      if (+v !== originalOrder[i]) noChanged = false;
+      if (+v <= 0) invalid = true;
+    });
+    // 변한 것이 없으면 api 호출 낭비 하지 말자
+    if (noChanged) {
+      onClickChangeMode();
+      onClickClose();
+      return;
+    }
+    if (invalid) {
+      alert("올바른 값을 입력해주세요.");
+      return;
+    }
+    numCount.forEach((v) => {
+      if (+v !== 1) wrongOrder = true;
+    });
+    if (wrongOrder) {
+      alert("순서를 올바르게 입력해주세요.");
+      return;
+    }
+    const sendValue = orderValue.map((v) => +v);
 
-  const onChangeOrderValue = (e) => {
-    setOrderValue(
-      orderValue.map((v, i) => (i === +e.target.name ? +e.target.value : +v))
-    );
+    (async () => {
+      try {
+        const settingStatuses = selectedDevice.statuses.map((v, i) => {
+          return {
+            ...v,
+            status_order: sendValue[i],
+          };
+        });
+        await axios.put(`/statusOrder/${selectedDevice.deviceId}`, {
+          orderList: sendValue,
+        });
+        dispatch(
+          updateStatusOrder({
+            deviceId: selectedDevice.deviceId,
+            statusInfo: settingStatuses,
+          })
+        );
+        alert("상태 우선순위가 변경되었습니다.");
+      } catch (err) {
+        console.error(err);
+      }
+      onClickChangeMode();
+      onClickClose();
+    })();
   };
 
   return changeMode ? (

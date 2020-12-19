@@ -8,6 +8,9 @@ export const initDevices = (devices) => {
 export const updateAnalog = ({ deviceId, currValue }) => {
   return { type: "UPDATE_ANALOG", deviceId, currValue };
 };
+export const updateStatusOrder = ({ deviceId, statusInfo }) => {
+  return { type: "UPDATE_STATUS_ORDER", deviceId, statusInfo };
+};
 
 // Initial State
 const initialState = [];
@@ -35,6 +38,15 @@ export default function devicesReducer(state = initialState, action) {
           ? {
               ...v,
               currValue: action.currValue,
+            }
+          : v
+      );
+    case "UPDATE_STATUS_ORDER":
+      return state.map((v) =>
+        v.deviceId === action.deviceId
+          ? {
+              ...v,
+              statuses: action.statusInfo,
             }
           : v
       );

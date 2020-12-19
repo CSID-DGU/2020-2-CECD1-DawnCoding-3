@@ -1,6 +1,7 @@
 package com.dawn;
 
 import com.dawn.dto.DeviceDTO;
+import com.dawn.dto.StatusDTO;
 import com.dawn.models.Device;
 import com.dawn.models.Status;
 import com.dawn.models.UnitType;
@@ -140,6 +141,18 @@ public class MainController {
         deviceRepository.saveAll(devices);
         deviceRepository.saveAll(adevices);
         return "good!";
+    }
+
+    @PutMapping("/statusOrder/{deviceId}")
+    public ResponseEntity updateOrder(@PathVariable Long deviceId, @RequestBody StatusDTO.Update orderList) throws IOException{
+        deviceRepository.findById(deviceId).ifPresent(theDevice -> {
+            List<Status> originalStatus = theDevice.getStatuses();
+            for(int i = 0 ; i < orderList.getOrderList().size(); i++){
+                originalStatus.get(i).setStatus_order(orderList.getOrderList().get(i));
+            }
+            deviceRepository.save(theDevice);
+        });
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @DeleteMapping("/devices")
