@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
-import { v4 as uuid } from "uuid";
 
 function StatusModalComponent({
   show,
@@ -13,19 +12,24 @@ function StatusModalComponent({
   const [orderValue, setOrderValue] = useState([]);
 
   useEffect(() => {
-    // 현재 단순히 index로 우선순위 처리 -> 나중에 변경 필요 -> 진짜 order 값이 필요
-    setOrderValue([]);
+    setOrderValue(
+      selectedDevice.statuses.map((v) => {
+        return v.status_order;
+      })
+    );
   }, [selectedDevice]);
 
   const onClickChangeMode = () => {
     setChangeMode(!changeMode);
   };
 
-  const onClickOrderChange = () => {};
+  const onClickOrderChange = () => {
+    console.log(orderValue);
+  };
 
   const onChangeOrderValue = (e) => {
     setOrderValue(
-      orderValue.map((v, i) => (i === +e.target.name ? e.target.value : v))
+      orderValue.map((v, i) => (i === +e.target.name ? +e.target.value : +v))
     );
   };
 
@@ -87,20 +91,21 @@ function StatusModalComponent({
             </tr>
           </thead>
           <tbody>
-            {/* {Object.entries(selectedDevice.statuses).map((v, i) => (
-              <tr key={uuid()}>
-                <td>{v[1]}</td>
-                <td>
-                  <input
-                    style={{ width: "100%", border: "none" }}
-                    type="text"
-                    name={i}
-                    value={orderValue[i]}
-                    onChange={onChangeOrderValue}
-                  />
-                </td>
-              </tr>
-            ))} */}
+            {selectedDevice.statuses &&
+              selectedDevice.statuses.map((v) => (
+                <tr key={v.status_key}>
+                  <td>{v.status_name}</td>
+                  <td>
+                    <input
+                      style={{ width: "100%", border: "none" }}
+                      type="text"
+                      name={v.status_key}
+                      value={orderValue[v.status_key]}
+                      onChange={onChangeOrderValue}
+                    />
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </Modal.Body>
