@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Form } from "react-bootstrap";
@@ -84,185 +84,181 @@ function EventTableComponent() {
     // eslint-disable-next-line
   }, [ttsEnd]);
 
-  const makeSetTimeOut = useCallback(
-    (theTimeSeed) => {
-      setTimeout(() => {
-        const isAnalog = Math.random() >= 0.5 ? true : false;
-        if (isAnalog) {
-          // 아날로그 데이터 -> 상한치/하한치를 랜덤하게 선택해서 해당 센서가 상한치/하한치 배열 안에 있다면 복귀 이벤트 발생, 아니면 초과 이벤트 발생
-          // status: ["상한치 초과", "상한치 복귀", "하한치 초과", "하한치 복귀"];
-          const moreEventsNumber = 2 + Math.floor(Math.random() * 3);
-          const theDate = new Date();
-          const sendData = [];
-          const settingData = [];
-          Array(moreEventsNumber)
-            .fill()
-            .forEach((v, i) => {
-              const isUpper = Math.random() >= 0.5 ? true : false;
-              let theId = 0;
-              let theLimit = 0;
-              let theIndex = 0;
-              let eventStatus = "";
-              if (isUpper) {
-                // 상한치 초과
-                if (highLimitList.current !== 0) {
-                  theId = highLimitList.current;
-                  analogDeviceList.current.push(theId);
-                  highLimitList.current = 0;
-                  eventStatus = `상한치 복귀`;
-                  theLimit = devices[theId].highCriticalPoint - 5;
-                } else {
-                  theIndex = Math.floor(
-                    Math.random() * analogDeviceList.current.length
-                  );
-                  theId = analogDeviceList.current[theIndex];
-                  analogDeviceList.current.splice(theIndex, 1);
-                  highLimitList.current = theId;
-                  eventStatus = `상한치 초과`;
-                  theLimit = devices[theId].highCriticalPoint + 4;
-                }
+  const makeSetTimeOut = (theTimeSeed) => {
+    setTimeout(() => {
+      const isAnalog = Math.random() >= 0.5 ? true : false;
+      if (isAnalog) {
+        // 아날로그 데이터 -> 상한치/하한치를 랜덤하게 선택해서 해당 센서가 상한치/하한치 배열 안에 있다면 복귀 이벤트 발생, 아니면 초과 이벤트 발생
+        // status: ["상한치 초과", "상한치 복귀", "하한치 초과", "하한치 복귀"];
+        const moreEventsNumber = 2 + Math.floor(Math.random() * 3);
+        const theDate = new Date();
+        const sendData = [];
+        const settingData = [];
+        Array(moreEventsNumber)
+          .fill()
+          .forEach((v, i) => {
+            const isUpper = Math.random() >= 0.5 ? true : false;
+            let theId = 0;
+            let theLimit = 0;
+            let theIndex = 0;
+            let eventStatus = "";
+            if (isUpper) {
+              // 상한치 초과
+              if (highLimitList.current !== 0) {
+                theId = highLimitList.current;
+                analogDeviceList.current.push(theId);
+                highLimitList.current = 0;
+                eventStatus = `상한치 복귀`;
+                theLimit = devices[theId].highCriticalPoint - 5;
               } else {
-                // 하한치 초과
-                if (lowLimitList.current !== 0) {
-                  theId = lowLimitList.current;
-                  analogDeviceList.current.push(theId);
-                  lowLimitList.current = 0;
-                  theLimit = devices[theId].lowCriticalPoint + 5;
-                  eventStatus = `하한치 복귀`;
-                } else {
-                  theIndex = Math.floor(
-                    Math.random() * analogDeviceList.current.length
-                  );
-                  theLimit = devices[theId].lowCriticalPoint - 4;
-                  theId = analogDeviceList.current[theIndex];
-                  analogDeviceList.current.splice(theIndex, 1);
-                  eventStatus = `하한치 초과`;
-                  lowLimitList.current = theId;
-                }
+                theIndex = Math.floor(
+                  Math.random() * analogDeviceList.current.length
+                );
+                theId = analogDeviceList.current[theIndex];
+                analogDeviceList.current.splice(theIndex, 1);
+                highLimitList.current = theId;
+                eventStatus = `상한치 초과`;
+                theLimit = devices[theId].highCriticalPoint + 4;
               }
-              const sendDataObject = {
-                createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${
-                  theDate.getMilliseconds() + 4 * i
-                }`,
-                deviceId: theId,
-                currValue: theLimit,
-                tts: true,
-              };
-              sendData.push(sendDataObject);
-              const settingDeviceIndex = devices.findIndex(
-                (v) => v.deviceId === sendDataObject.deviceId
-              );
-              settingData.push({
-                createDate: sendDataObject.createDate,
-                id: sendDataObject.deviceId,
-                name: devices[settingDeviceIndex].deviceName,
-                signalName: devices[settingDeviceIndex].signalName,
-                status: eventStatus,
-                TTS: "true",
-                blink: true,
-                checked: false,
-              });
-            });
-          sendData
-            .reduce((prevProm, data) => {
-              return prevProm.then(() => axios.put("/device", data));
-            }, Promise.resolve())
-            .then(() => {
-              setTtsEnd(!ttsEnd);
-            })
-            .catch((err) => {
-              console.error(err);
-            });
-          settingData.forEach((data, i) => {
-            dispatch(
-              updateAnalog({
-                deviceId: data.id,
-                currValue: sendData[i].currValue,
-              })
+            } else {
+              // 하한치 초과
+              if (lowLimitList.current !== 0) {
+                theId = lowLimitList.current;
+                analogDeviceList.current.push(theId);
+                lowLimitList.current = 0;
+                theLimit = devices[theId].lowCriticalPoint + 5;
+                eventStatus = `하한치 복귀`;
+              } else {
+                theIndex = Math.floor(
+                  Math.random() * analogDeviceList.current.length
+                );
+                theLimit = devices[theId].lowCriticalPoint - 4;
+                theId = analogDeviceList.current[theIndex];
+                analogDeviceList.current.splice(theIndex, 1);
+                eventStatus = `하한치 초과`;
+                lowLimitList.current = theId;
+              }
+            }
+            const sendDataObject = {
+              createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${
+                theDate.getMilliseconds() + 4 * i
+              }`,
+              deviceId: theId,
+              currValue: theLimit,
+              tts: true,
+            };
+            sendData.push(sendDataObject);
+            const settingDeviceIndex = devices.findIndex(
+              (v) => v.deviceId === sendDataObject.deviceId
             );
-          });
-          dispatch(newEventAction(settingData));
-        } else {
-          // 상태 데이터의 감시 이벤트 발생
-          const theSelectedIndex = Math.floor(Math.random() * StatusDeviceNum);
-          const theDate = new Date();
-          const sendData = [];
-          const settingData = [];
-          const selectedDevice = {
-            createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${theDate.getMilliseconds()}`,
-            deviceId: devices[theSelectedIndex].deviceId,
-            currentStatusCode: devices[theSelectedIndex].currentStatusCode,
-            tts: devices[theSelectedIndex].tts,
-          };
-          settingData.push({
-            createDate: selectedDevice.createDate,
-            id: selectedDevice.deviceId,
-            name: devices[theSelectedIndex].deviceName,
-            signalName: devices[theSelectedIndex].signalName,
-            status:
-              devices[theSelectedIndex].statuses[
-                selectedDevice.currentStatusCode
-              ],
-            statusCode: selectedDevice.currentStatusCode,
-            TTS: `${selectedDevice.tts}`,
-            blink: true,
-            checked: false,
-          });
-          sendData.push(selectedDevice);
-          // 총 4~5개의 센서 상태가 한 번에 변함
-          const moreEventsNumber = 2 + Math.floor(Math.random() * 3);
-          Array(moreEventsNumber)
-            .fill()
-            .forEach((v, i) => {
-              const moreEventDevice = devices.find(
-                (device) =>
-                  device.deviceId ===
-                  ((selectedDevice.deviceId + i) % StatusDeviceNum) + 1
-              );
-              const theDate = new Date();
-              const nextData = {
-                createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${
-                  theDate.getMilliseconds() + 4 * i
-                }`,
-                deviceId: moreEventDevice.deviceId,
-                currentStatusCode:
-                  (moreEventDevice.currentStatusCode + 1) %
-                  Object.keys(moreEventDevice.statuses).length,
-                tts: moreEventDevice.tts,
-              };
-              sendData.push(nextData);
-              settingData.push({
-                createDate: nextData.createDate,
-                id: moreEventDevice.deviceId,
-                name: moreEventDevice.deviceName,
-                signalName: moreEventDevice.signalName,
-                status: moreEventDevice.statuses[nextData.currentStatusCode],
-                statusCode: nextData.currentStatusCode,
-                TTS: `${nextData.tts}`,
-                blink: true,
-                checked: false,
-              });
+            settingData.push({
+              createDate: sendDataObject.createDate,
+              id: sendDataObject.deviceId,
+              name: devices[settingDeviceIndex].deviceName,
+              signalName: devices[settingDeviceIndex].signalName,
+              status: eventStatus,
+              TTS: "true",
+              blink: true,
+              checked: false,
             });
-          // 각각 변한 데이터를 put 요청
-          sendData
-            .reduce((prevProm, data) => {
-              return prevProm.then(() => axios.put("/device", data));
-            }, Promise.resolve())
-            .then(() => {
-              setTtsEnd(!ttsEnd);
+          });
+        sendData
+          .reduce((prevProm, data) => {
+            return prevProm.then(() => axios.put("/device", data));
+          }, Promise.resolve())
+          .then(() => {
+            setTtsEnd(!ttsEnd);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+        settingData.forEach((data, i) => {
+          dispatch(
+            updateAnalog({
+              deviceId: data.id,
+              currValue: sendData[i].currValue,
             })
-            .catch((err) => {
-              console.error(err);
+          );
+        });
+        dispatch(newEventAction(settingData));
+      } else {
+        // 상태 데이터의 감시 이벤트 발생
+        const theSelectedIndex = Math.floor(Math.random() * StatusDeviceNum);
+        const theDate = new Date();
+        const sendData = [];
+        const settingData = [];
+        const selectedDevice = {
+          createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${theDate.getMilliseconds()}`,
+          deviceId: devices[theSelectedIndex].deviceId,
+          currentStatusCode: devices[theSelectedIndex].currentStatusCode,
+          tts: devices[theSelectedIndex].tts,
+        };
+        settingData.push({
+          createDate: selectedDevice.createDate,
+          id: selectedDevice.deviceId,
+          name: devices[theSelectedIndex].deviceName,
+          signalName: devices[theSelectedIndex].signalName,
+          status:
+            devices[theSelectedIndex].statuses[selectedDevice.currentStatusCode]
+              .status_name,
+          statusCode: selectedDevice.currentStatusCode,
+          TTS: `${selectedDevice.tts}`,
+          blink: true,
+          checked: false,
+        });
+        sendData.push(selectedDevice);
+        // 총 4~5개의 센서 상태가 한 번에 변함
+        const moreEventsNumber = 2 + Math.floor(Math.random() * 3);
+        Array(moreEventsNumber)
+          .fill()
+          .forEach((v, i) => {
+            const moreEventDevice = devices.find(
+              (device) =>
+                device.deviceId ===
+                ((selectedDevice.deviceId + i) % StatusDeviceNum) + 1
+            );
+            const theDate = new Date();
+            const nextData = {
+              createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${
+                theDate.getMilliseconds() + 4 * i
+              }`,
+              deviceId: moreEventDevice.deviceId,
+              currentStatusCode:
+                (moreEventDevice.currentStatusCode + 1) %
+                Object.keys(moreEventDevice.statuses).length,
+              tts: moreEventDevice.tts,
+            };
+            sendData.push(nextData);
+            settingData.push({
+              createDate: nextData.createDate,
+              id: moreEventDevice.deviceId,
+              name: moreEventDevice.deviceName,
+              signalName: moreEventDevice.signalName,
+              status:
+                moreEventDevice.statuses[nextData.currentStatusCode]
+                  .status_name,
+              statusCode: nextData.currentStatusCode,
+              TTS: `${nextData.tts}`,
+              blink: true,
+              checked: false,
             });
-          dispatch(newEventAction(settingData)); // 이벤트 테이블
-          dispatch(updateDevices(settingData)); // 실제 디바이스의 상태들도 변경
-        }
-      }, theTimeSeed * 1000);
-    },
-    // eslint-disable-next-line
-    [theSetTimeout.current]
-  );
-
+          });
+        // 각각 변한 데이터를 put 요청
+        sendData
+          .reduce((prevProm, data) => {
+            return prevProm.then(() => axios.put("/device", data));
+          }, Promise.resolve())
+          .then(() => {
+            setTtsEnd(!ttsEnd);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+        dispatch(newEventAction(settingData)); // 이벤트 테이블
+        dispatch(updateDevices(settingData)); // 실제 디바이스의 상태들도 변경
+      }
+    }, theTimeSeed * 1000);
+  };
   const onClickStopBtn = () => {
     let newEvents = [];
     events.forEach((event) => {
