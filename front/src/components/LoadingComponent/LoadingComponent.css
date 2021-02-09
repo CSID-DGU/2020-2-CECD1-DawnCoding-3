@@ -1,0 +1,83 @@
+@keyframes ldio-22cxlur1q3y-1 {
+  0% {
+    top: 36px;
+    height: 128px;
+  }
+  50% {
+    top: 60px;
+    height: 80px;
+  }
+  100% {
+    top: 60px;
+    height: 80px;
+  }
+}
+@keyframes ldio-22cxlur1q3y-2 {
+  0% {
+    top: 41.99999999999999px;
+    height: 116.00000000000001px;
+  }
+  50% {
+    top: 60px;
+    height: 80px;
+  }
+  100% {
+    top: 60px;
+    height: 80px;
+  }
+}
+@keyframes ldio-22cxlur1q3y-3 {
+  0% {
+    top: 48px;
+    height: 104px;
+  }
+  50% {
+    top: 60px;
+    height: 80px;
+  }
+  100% {
+    top: 60px;
+    height: 80px;
+  }
+}
+.ldio-22cxlur1q3y div {
+  position: absolute;
+  width: 20px;
+}
+.ldio-22cxlur1q3y div:nth-child(1) {
+  left: 40px;
+  background: #9c0404;
+  animation: ldio-22cxlur1q3y-1 1s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+  animation-delay: -0.2s;
+}
+.ldio-22cxlur1q3y div:nth-child(2) {
+  left: 90px;
+  background: #5a0b0b;
+  animation: ldio-22cxlur1q3y-2 1s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+  animation-delay: -0.1s;
+}
+.ldio-22cxlur1q3y div:nth-child(3) {
+  left: 140px;
+  background: #290e0e;
+  animation: ldio-22cxlur1q3y-3 1s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+  animation-delay: undefineds;
+}
+
+.loadingio-spinner-pulse-8j2o6q6uauj {
+  width: 200px;
+  height: 200px;
+  display: inline-block;
+  overflow: hidden;
+  background: #f1f2f3;
+}
+.ldio-22cxlur1q3y {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform: translateZ(0) scale(1);
+  backface-visibility: hidden;
+  transform-origin: 0 0; /* see note above */
+}
+.ldio-22cxlur1q3y div {
+  box-sizing: content-box;
+}

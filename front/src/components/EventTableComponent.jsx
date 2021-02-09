@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Button, Form } from "react-bootstrap";
 import EventComponent from "./EventComponent";
 import SensorGraphComponent from "./SensorGraphComponent";
+import STTModalComponent from "./ModalWindow/STTModalComponent";
 import { v4 as uuid } from "uuid";
 import "./EventTableStyle.css";
 import { newEvents as newEventAction } from "../modules/newEvents";
@@ -22,6 +23,7 @@ function EventTableComponent() {
   const [events, setEvents] = useState([]);
   const [watchMode, setWatchMode] = useState(false);
   const [ttsEnd, setTtsEnd] = useState(false);
+  const [show, setShow] = useState(false);
 
   // 아날로그 디바이스의 인덱스를 배열에 저장
   useEffect(() => {
@@ -261,9 +263,6 @@ function EventTableComponent() {
     newEvents.map((event) => (event.blink = false));
     setEvents(newEvents);
   };
-  const onClickSTTBtn = () => {
-    alert("껄껄슨");
-  };
 
   return (
     <>
@@ -298,9 +297,16 @@ function EventTableComponent() {
           onChange={() => setWatchMode(!watchMode)}
         />
       </Form>
-      <Button className="sttBtn" variant="primary" onClick={onClickSTTBtn}>
+      <Button
+        className="sttBtn"
+        variant="primary"
+        onClick={() => {
+          setShow(true);
+        }}
+      >
         STT
       </Button>
+      <STTModalComponent show={show} setShow={setShow} />
       <Button className="stopBtn" variant="danger" onClick={onClickStopBtn}>
         멈춤
       </Button>
