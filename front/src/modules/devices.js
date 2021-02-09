@@ -1,8 +1,17 @@
+import { initStatusDeviceNum } from "./statusDevices";
+
 // 액션 생성 함수
 export const updateDevices = (result) => {
   return { type: "UPDATE_DEVICES", result };
 };
-export const initDevices = (devices) => {
+export const initDevices = (devices, dispatch) => {
+  let the_cnt = 0;
+  devices.forEach((v) => {
+    if (!v.analog) {
+      the_cnt += 1;
+    }
+  });
+  dispatch(initStatusDeviceNum(the_cnt));
   return { type: "INIT_DEVICES", devices };
 };
 export const updateAnalog = ({ deviceId, currValue }) => {

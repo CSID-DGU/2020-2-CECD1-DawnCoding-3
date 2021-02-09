@@ -52,7 +52,7 @@ function SensorGraphComponent() {
   useEffect(() => {
     (async () => {
       const { data } = await axios.get("/devices");
-      dispatch(initDevices(data));
+      dispatch(initDevices(data, dispatch));
     })();
     // eslint-disable-next-line
   }, []);

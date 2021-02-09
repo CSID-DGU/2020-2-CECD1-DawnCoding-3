@@ -9,12 +9,11 @@ import "./EventTableStyle.css";
 import { newEvents as newEventAction } from "../modules/newEvents";
 import { updateDevices, updateAnalog } from "../modules/devices";
 
-const StatusDeviceNum = 7; // 상태 정보를 갖는 디바이스의 개수
-
 function EventTableComponent() {
   const dispatch = useDispatch();
   const newEvents = useSelector((state) => state.newEventsReducer);
   const devices = useSelector((state) => state.devicesReducer);
+  const StatusDeviceNum = useSelector((state) => state.statusDeviceReducer); // 상태 정보를 갖는 디바이스의 개수
   const theSetTimeout = useRef(null);
   const highLimitList = useRef(0);
   const lowLimitList = useRef(0);
@@ -35,13 +34,8 @@ function EventTableComponent() {
       // eslint-disable-next-line
       .map((v, i) => {
         analogDeviceList.current.push(i + StatusDeviceNum);
-        // 최초에 불러올 때 상한/하한치 넘어선 경우 처리
-        // if(devices[i + StatusDeviceNum].currValue < devices[i + StatusDeviceNum].lowCriticalPoint){
-        //   lowLimitList.current = i + StatusDeviceNum;
-        // } else if(devices[i + StatusDeviceNum].currValue > devices[i + StatusDeviceNum].highCriticalPoint){
-        //   highLimitList.current = i + StatusDeviceNum;
-        // }
       });
+    // eslint-disable-next-line
   }, [devices]);
 
   // 새로운 이벤트 들어오면 화면에 표시
