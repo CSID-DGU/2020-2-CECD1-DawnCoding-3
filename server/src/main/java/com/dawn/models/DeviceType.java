@@ -10,7 +10,7 @@ import javax.persistence.*;
 public class DeviceType {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "deviceTypeId")
     private long deviceTypeId;
 

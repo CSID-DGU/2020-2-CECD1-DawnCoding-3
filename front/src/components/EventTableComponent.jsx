@@ -267,6 +267,9 @@ function EventTableComponent() {
     newEvents.map((event) => (event.blink = false));
     setEvents(newEvents);
   };
+  const onClickSTTBtn = () => {
+    alert("껄껄슨");
+  };
 
   return (
     <>
@@ -301,7 +304,7 @@ function EventTableComponent() {
           onChange={() => setWatchMode(!watchMode)}
         />
       </Form>
-      <Button className="sttBtn" variant="primary">
+      <Button className="sttBtn" variant="primary" onClick={onClickSTTBtn}>
         STT
       </Button>
       <Button className="stopBtn" variant="danger" onClick={onClickStopBtn}>
