@@ -27,7 +27,7 @@ public class STTController {
         final String realPath = sttPath.getURL().getPath().substring(1);
         Runtime rt = Runtime.getRuntime();
         Process pc = null;
-        List<DeviceDTO.Request> result = null;
+        List<DeviceDTO.STTResult> result = null;
         try {
             System.out.println("python " + realPath);
 

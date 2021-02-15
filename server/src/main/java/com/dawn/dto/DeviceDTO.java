@@ -26,4 +26,14 @@ public class DeviceDTO {
         private boolean tts;
     }
 
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class STTResult {
+        private long deviceId;
+        private boolean analog;
+        private String deviceName;
+        private String currentStatusTitle;
+        private int currValue;
+    }
 }
