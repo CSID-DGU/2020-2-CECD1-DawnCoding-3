@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Button, ListGroup, Modal } from "react-bootstrap";
 import LoadingComponent from "../LoadingComponent/LoadingComponent";
-// import { useDispatch } from "react-redux";
 import axios from "axios";
 import "./STTModalComponent.css";
 
 function StatusModalComponent({ show, setShow }) {
-  // const dispatch = useDispatch();
   const [sttMode, setSttMode] = useState(false);
+  const [sttResult, setSttResult] = useState([]);
 
   const onClickStt = async () => {
     setSttMode(true);
@@ -15,8 +14,8 @@ function StatusModalComponent({ show, setShow }) {
       // 1. get 요청 보내면 서버에서 stt 시작
       // 2. 사용자가 말하면 결과 리스트 받아서 리턴
       // 3. 화면에 display
-      const result = await axios.get("/stt");
-      console.log(result);
+      const { data } = await axios.get("/stt");
+      setSttResult(data);
     } catch (err) {
       console.error(err);
     }
@@ -41,15 +40,28 @@ function StatusModalComponent({ show, setShow }) {
       </Modal.Header>
       <Modal.Body className="STT-Modal-Body">
         {sttMode ? (
-          <>
-            <p>원하는 명령어를 음성으로 말해주세요.</p>
-            <LoadingComponent />
-          </>
+          sttResult.length === 0 ? (
+            <>
+              <h5>원하는 명령어를 음성으로 말해주세요.</h5>
+              <LoadingComponent />
+            </>
+          ) : (
+            <>
+              <h5>검색 결과</h5>
+              <ListGroup>
+                {sttResult.map((v) => (
+                  <ListGroup.Item key={v.deviceId}>
+                    {v.deviceName}
+                  </ListGroup.Item>
+                ))}
+              </ListGroup>
+            </>
+          )
         ) : (
           <>
-            <p>음성인식 가능 명령어 목록</p>
+            <h5>음성인식 가능 명령어 목록</h5>
             <ol>
-              <li>상한치 근접 센서 목록 알려줘</li>
+              <li>상태 디바이스 목록 알려줘</li>
             </ol>
             <Button onClick={onClickStt}>음성 인식 시작</Button>
           </>
