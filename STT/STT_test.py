@@ -37,7 +37,7 @@ import win32com.client
 import sys
 import os
 
-credential_path='C:\\Users\\jw969\\Downloads\\speechtotext-295717-144ec58c2381.json'
+credential_path='C:\\Users\\jw969\\Desktop\\speechtotext-305217-24c8ddb6284e.json'
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
 
 # Audio recording parameters
@@ -154,7 +154,6 @@ def listen_print_loop(responses):
             num_chars_printed = len(transcript)
 
         else:
-            # print(transcript + overwrite_chars)
             return (transcript + overwrite_chars)
             # Exit recognition if any of the transcribed phrases could be
             # one of our keywords.
@@ -193,10 +192,9 @@ def executeSTT():
         command = listen_print_loop(responses)
         return command
 
-if __name__ == "__main__":
+def makeQuery():
     tts = win32com.client.Dispatch("SAPI.SpVoice")
     tts.Speak("명령어를 입력해주세요")
     command = executeSTT()
-    result = querySelector(command)
     print("내 명령어: ", command)
-# [END speech_transcribe_streaming_mic]
+    return command

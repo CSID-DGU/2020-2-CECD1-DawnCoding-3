@@ -1,0 +1,3 @@
+command,query
+1번 명령어입니다,select * from command1;
+이것은 명령어 2번,select * from command2;
