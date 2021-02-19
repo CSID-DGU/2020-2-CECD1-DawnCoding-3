@@ -24,6 +24,7 @@ function StatusModalComponent({ show, setShow }) {
   const onClickCancel = () => {
     setShow(false);
     setSttMode(false);
+    setSttResult([]);
     // STT 도중 취소 로직 생각해보기
   };
 

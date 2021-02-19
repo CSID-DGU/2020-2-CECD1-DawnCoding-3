@@ -37,7 +37,7 @@ import win32com.client
 import sys
 import os
 
-credential_path='C:\\Users\\jw969\\Desktop\\speechtotext-305217-24c8ddb6284e.json'
+credential_path='C:\\Users\\ysk78\\src\\speechtotext-305217-24c8ddb6284e.json'
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
 
 # Audio recording parameters
