@@ -25,7 +25,7 @@ public class DeviceController {
     private static final ClassPathResource sapiPath = new ClassPathResource("static/sapi.py");
 
     // 디바이스 상태 변경
-    @PutMapping("/statusOrder/{deviceId}")
+    @PutMapping("/tts/statusOrder/{deviceId}")
     public ResponseEntity updateOrder(@PathVariable Long deviceId, @RequestBody StatusDTO.Update orderList) throws IOException {
         deviceRepository.findById(deviceId).ifPresent(theDevice -> {
             List<Status> originalStatus = theDevice.getStatuses();
@@ -38,14 +38,14 @@ public class DeviceController {
     }
 
     // 디바이스 삭제
-    @DeleteMapping("/devices")
+    @DeleteMapping("/tts/devices")
     public ResponseEntity removeAllDevice() {
         deviceRepository.deleteAll();
         return new ResponseEntity(HttpStatus.OK);
     }
 
     // 디바이스 전체 가져오기
-    @GetMapping("/devices")
+    @GetMapping("/tts/devices")
     public ResponseEntity<List<Device>> getDevices() {
         List<Device> devices = deviceRepository.findAll();
         return new ResponseEntity<>(devices, HttpStatus.OK);
@@ -60,7 +60,7 @@ public class DeviceController {
     }
 
     // 디바이스 상태 변경 시 상태 변경 tts
-    @PutMapping("/device")
+    @PutMapping("/tts/device")
     public ResponseEntity<Object> triggerEventToDevice(@RequestBody DeviceDTO.Update device) throws Exception {
         Device deviceInDB = deviceRepository.findById(device.getDeviceId()).get();
         if (deviceInDB.isAnalog()) {

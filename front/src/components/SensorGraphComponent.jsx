@@ -51,7 +51,7 @@ function SensorGraphComponent() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await axios.get("/devices");
+      const { data } = await axios.get("/tts/devices");
       dispatch(initDevices(data, dispatch));
     })();
     // eslint-disable-next-line
@@ -64,7 +64,7 @@ function SensorGraphComponent() {
     // 클릭한 디바이스 이름 TTS로 읽어주기
     try {
       (async () => {
-        await axios.get(`/device/${devices[e.target.name].deviceName}`);
+        await axios.get(`/tts/device/${devices[e.target.name].deviceName}`);
       })();
     } catch (err) {
       console.error(err);
@@ -146,7 +146,7 @@ function SensorGraphComponent() {
     // TTS 요청
     sendData
       .reduce((prevProm, data) => {
-        return prevProm.then(() => axios.put("/device", data));
+        return prevProm.then(() => axios.put("/tts/device", data));
       }, Promise.resolve())
       .catch((err) => {
         console.error(err);
@@ -202,7 +202,7 @@ function SensorGraphComponent() {
     // 클릭한 디바이스 이름 TTS로 읽어주기
     try {
       (async () => {
-        await axios.get(`/device/${devices[e.target.name].deviceName}`);
+        await axios.get(`/tts/device/${devices[e.target.name].deviceName}`);
       })();
     } catch (err) {
       console.error(err);
@@ -212,7 +212,7 @@ function SensorGraphComponent() {
   const onClickValueChange = () => {
     try {
       (async () => {
-        const { data } = await axios.put(`/device`, {
+        const { data } = await axios.put(`/tts/device`, {
           deviceId: selectedAnalog.deviceId,
           currValue: selectedAnalog.currValue,
           tts: selectedAnalog.tts,

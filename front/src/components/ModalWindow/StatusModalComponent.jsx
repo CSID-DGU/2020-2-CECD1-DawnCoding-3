@@ -69,7 +69,7 @@ function StatusModalComponent({
             status_order: sendValue[i],
           };
         });
-        await axios.put(`/statusOrder/${selectedDevice.deviceId}`, {
+        await axios.put(`/tts/statusOrder/${selectedDevice.deviceId}`, {
           orderList: sendValue,
         });
         dispatch(

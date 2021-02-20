@@ -160,7 +160,7 @@ function EventTableComponent() {
           });
         sendData
           .reduce((prevProm, data) => {
-            return prevProm.then(() => axios.put("/device", data));
+            return prevProm.then(() => axios.put("/tts/device", data));
           }, Promise.resolve())
           .then(() => {
             setTtsEnd(!ttsEnd);
@@ -242,7 +242,7 @@ function EventTableComponent() {
         // 각각 변한 데이터를 put 요청
         sendData
           .reduce((prevProm, data) => {
-            return prevProm.then(() => axios.put("/device", data));
+            return prevProm.then(() => axios.put("/tts/device", data));
           }, Promise.resolve())
           .then(() => {
             setTtsEnd(!ttsEnd);
