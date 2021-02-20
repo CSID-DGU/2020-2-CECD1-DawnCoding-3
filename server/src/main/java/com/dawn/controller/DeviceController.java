@@ -47,12 +47,12 @@ public class DeviceController {
     // 디바이스 전체 가져오기
     @GetMapping("/tts/devices")
     public ResponseEntity<List<Device>> getDevices() {
-        List<Device> devices = deviceRepository.findAll();
+        List<Device> devices = deviceRepository.getAllDevices();
         return new ResponseEntity<>(devices, HttpStatus.OK);
     }
 
     // 디바이스 선택시 알림용 tts
-    @GetMapping("/device/{deviceName}")
+    @GetMapping("/tts/device/{deviceName}")
     public ResponseEntity<Object> selectDevice(@PathVariable("deviceName") String deviceName) throws Exception {
         String sapiMessage = deviceName + "가 선택되었습니다";
         runSapi(sapiMessage);
