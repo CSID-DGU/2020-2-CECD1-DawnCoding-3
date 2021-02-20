@@ -33,7 +33,8 @@ from google.cloud import speech
 import pyaudio
 from six.moves import queue
 
-import win32com.client
+# import win32com.client
+import pyttsx3
 import sys
 import os
 
@@ -193,8 +194,12 @@ def executeSTT():
         return command
 
 def makeQuery():
-    tts = win32com.client.Dispatch("SAPI.SpVoice")
-    tts.Speak("명령어를 입력해주세요")
+    # tts = win32com.client.Dispatch("SAPI.SpVoice")
+    engine = pyttsx3.init()
+    engine.say("명령어를 입력해주세요")
+    engine.runAndWait()
+    # tts.Rate = 3
+    # tts.Speak("명령어를 입력해주세요")
     command = executeSTT()
-    print("내 명령어: ", command)
+#     print("내 명령어: ", command)
     return command

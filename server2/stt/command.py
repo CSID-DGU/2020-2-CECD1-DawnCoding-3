@@ -1,8 +1,8 @@
 import pandas as pd
-import pandas as pd
 from difflib import SequenceMatcher
 from konlpy.tag import Okt
 from jamo import h2j, j2hcj
+from STT_test import makeQuery
 
 def makeJamo(tokenList):
     jamoList = []
@@ -34,11 +34,15 @@ def querySelector(voice):
     for i, token in enumerate(tokenizeList):
         jamo = makeJamo(token)
         match_rate = float(f'{SequenceMatcher(None, jamo, qa).ratio()*100:.2f}')
+        print(match_rate)
 #         print(match_rate)
         if match_rate > best_match_rate:
             best_match_rate = match_rate
             index = i
     return queryList[index]
 
-result = querySelector("1번 명령어 입니다")
-print(result)
+def start():
+    command = makeQuery()
+
+    result = querySelector(command)
+    return result

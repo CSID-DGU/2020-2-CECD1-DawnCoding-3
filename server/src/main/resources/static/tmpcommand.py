@@ -1,1 +1,0 @@
-print("select * from device where analog=0x00")

@@ -1,0 +1,3 @@
+command,query
+배진우,select * from device where analog=0x00
+파이썬 플라스크 장고,select * from device where analog=0x01
