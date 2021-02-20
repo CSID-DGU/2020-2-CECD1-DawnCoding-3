@@ -10,10 +10,10 @@ app.database = database
 
 @app.route('/stt')
 def hello_word():
-    result = start()
+    command, query = start()
 
-    print(result)
-    rows = app.database.execute(text(result)).fetchall()
+    print(query)
+    rows = app.database.execute(text(query)).fetchall()
     res = [{
         'deviceId': row['device_id'],
         'analog': row['analog'],
@@ -21,8 +21,11 @@ def hello_word():
         'currentStatusTitle': row['current_status_title'],
         'currValue': row['curr_value']
     } for row in rows]
-
-    return jsonify(res), 200
+    returnRes = {
+        "command": command,
+        "query": res
+    }
+    return jsonify(returnRes), 200
 
 
 if __name__ == '__main__':

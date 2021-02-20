@@ -39,10 +39,8 @@ def querySelector(voice):
         if match_rate > best_match_rate:
             best_match_rate = match_rate
             index = i
-    return queryList[index]
+    return commandList[index], queryList[index]
 
 def start():
     command = makeQuery()
-
-    result = querySelector(command)
-    return result
+    return querySelector(command)
