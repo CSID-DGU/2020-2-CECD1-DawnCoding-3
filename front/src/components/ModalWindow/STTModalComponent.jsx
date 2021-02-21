@@ -53,9 +53,27 @@ function StatusModalComponent({ show, setShow }) {
               <h5>검색 결과</h5>
               <h6>{sttCommand}</h6>
               <ListGroup>
+                <ListGroup.Item>
+                  <div>디바이스 이름</div>
+                  <div>시그널 이름</div>
+                  <div>상태/수치</div>
+                </ListGroup.Item>
                 {sttResult.map((v) => (
                   <ListGroup.Item key={v.deviceId}>
-                    {v.deviceName}
+                    {v.analog ? (
+                      <>
+                        <div>{v.deviceName} (아날로그)</div>
+                        <div>{v.signalName}</div>
+                        <div>{v.currValue}</div>
+                      </>
+                    ) : (
+                      <>
+                        <div>{v.deviceName}</div>
+                        <div>{v.signalName}</div>
+                        <div>{v.currentStatusTitle}</div>
+                      </>
+                    )}
+
                   </ListGroup.Item>
                 ))}
               </ListGroup>

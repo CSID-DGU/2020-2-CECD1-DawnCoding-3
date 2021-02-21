@@ -10,20 +10,21 @@ app.database = database
 
 @app.route('/stt')
 def hello_word():
-    command, query = start()
-    # command, query = ('어떤 커맨드라고 알려줘', 'aa')
+    # command, query = start()
+    command, query = ('어떤 커맨드라고 알려줘', 'aa')
 
     print(query)
-    rows = app.database.execute(text(query)).fetchall()
-    # rows = app.database.execute(text(
-    #     '''
-    #     select * from device where analog=0x01
-    #     '''
-    # )).fetchall();
+    # rows = app.database.execute(text(query)).fetchall()
+    rows = app.database.execute(text(
+        '''
+        select * from device where analog=0x01
+        '''
+    )).fetchall();
     res = [{
         'deviceId': row['device_id'],
         'analog': row['analog'],
         'deviceName': row['device_name'],
+        'signalName' : row['signal_name'],
         'currentStatusTitle': row['current_status_title'],
         'currValue': row['curr_value']
     } for row in rows]
