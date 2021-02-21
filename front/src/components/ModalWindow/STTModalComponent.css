@@ -5,7 +5,12 @@
 }
 .list-group {
   width: 100%;
+  height : 50vh;
+  overflow-y: auto;
 }
 ol {
   padding: 0;
+}
+h6 {
+  color : rgb(177, 25, 25);
 }
