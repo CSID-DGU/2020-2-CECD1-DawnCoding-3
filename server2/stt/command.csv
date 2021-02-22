@@ -1,3 +1,3 @@
 command,query
-¹èÁø¿ì,select * from device where analog=0x00
-ÆÄÀÌ½ã ÇÃ¶ó½ºÅ© Àå°í,select * from device where analog=0x01
+ë°°ì§„ìš°,select * from device where analog=0x00
+íŒŒì´ì¬ í”Œë¼ìŠ¤í¬ ì¥ê³ ,select * from device where analog=0x01
