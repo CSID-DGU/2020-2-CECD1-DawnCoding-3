@@ -26,9 +26,9 @@ def querySelector(voice):
 
     okt = Okt()
     tokenizeList = []
-    tokenizeList.append(okt.morphs(commandList[0]))
-    tokenizeList.append(okt.morphs(commandList[1]))
-#     print(tokenizeList)
+    for command in commandList:
+        tokenizeList.append(okt.morphs(command))
+    # print(tokenizeList)
 
     index = 0
     best_match_rate = 0.0

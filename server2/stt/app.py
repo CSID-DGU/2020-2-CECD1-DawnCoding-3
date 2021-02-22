@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from sqlalchemy import create_engine, text
-# from command import querySelector, start
+from command import querySelector, start
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 
@@ -10,8 +10,8 @@ app.database = database
 
 @app.route('/stt')
 def hello_word():
-    # command, query = start()
-    command, query = ('어떤 커맨드라고 알려줘', 'aa')
+    command, query = start()
+    # command, query = ('어떤 커맨드라고 알려줘', 'aa')
 
     print(query)
     # rows = app.database.execute(text(query)).fetchall()
