@@ -1,3 +1,5 @@
 command,query
-������,select * from device where analog=0x00
-���̽� �ö�ũ ���,select * from device where analog=0x01
+아날로그 장치 상태 출력,select * from device where analog=0x00
+디지털 장비 상태 출력,select * from device where analog=0x01
+온도이상 장비 출력,select *from device where high_critical_point=80
+정상 장비 출력, select *from device where current_status_title='정상'

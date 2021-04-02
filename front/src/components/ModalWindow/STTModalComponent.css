@@ -3,9 +3,35 @@
   flex-direction: column;
   align-items: center;
 }
+.STT-Modal .modal-dialog {
+  max-width: 100%;
+}
+.STT-Modal .modal-dialog .modal-content {
+  width : 70vw;
+  margin : 1.75em auto;
+}
 .list-group {
   width: 100%;
+  height : 50vh;
+  overflow-y: auto;
+}
+.list-group-item {
+  display: flex;
+  justify-content: space-between;
+}
+.list-group-item div {
+  width: 30%;
+  text-align: center;
+}
+.list-group-item div:first-child{
+  width: 50%;
+}
+.list-group-item div:last-child {
+  width: 20%;
 }
 ol {
   padding: 0;
+}
+h6 {
+  color : rgb(177, 25, 25);
 }

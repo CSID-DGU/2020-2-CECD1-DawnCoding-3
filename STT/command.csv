@@ -1,3 +1,5 @@
 command,query
-»óÅÂ µğ¹ÙÀÌ½º ¸ñ·Ï ¾Ë·ÁÁà,select * from device where analog=0x00
-¾Æ³¯·Î±× µğ¹ÙÀÌ½º ¸ñ·Ï ¾Ë·ÁÁà,select * from device where analog=0x01
+ì•„ë‚ ë¡œê·¸ ì¥ì¹˜ë“¤ì˜ ìƒíƒœë¥¼ ë³´ì—¬ì¤˜,select * from device where analog=0x00
+ë””ì§€í„¸ ì¥ë¹„ì˜ ìƒíƒœë¥¼ ë³´ì—¬ì¤˜,select * from device where analog=0x01
+ì˜¨ë„ê°€ 80ë„ì¸ ì¥ë¹„ë“¤ì„ ë³´ì—¬ì¤˜,select *from device where high_critical_point=80
+ì •ìƒ ì¥ë¹„ ì¶œë ¥, select *from device where current_status_title='ì •ìƒ'

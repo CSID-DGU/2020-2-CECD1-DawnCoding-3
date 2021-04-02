@@ -38,7 +38,7 @@ import pyttsx3
 import sys
 import os
 
-credential_path='C:\\Users\\jw969\\Desktop\\speechtotext-305217-24c8ddb6284e.json'
+credential_path = 'C:\\Users\\jw969\\Desktop\\speechtotext-305217-24c8ddb6284e.json'
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
 
 # Audio recording parameters
@@ -193,13 +193,15 @@ def executeSTT():
         command = listen_print_loop(responses)
         return command
 
+
 def makeQuery():
     # tts = win32com.client.Dispatch("SAPI.SpVoice")
+    # tts.Rate = 5
+    # tts.Speak("명령어를 입력해주세요")
     engine = pyttsx3.init()
     engine.say("명령어를 입력해주세요")
     engine.runAndWait()
-    # tts.Rate = 3
-    # tts.Speak("명령어를 입력해주세요")
+    print("now")
     command = executeSTT()
 #     print("내 명령어: ", command)
     return command
