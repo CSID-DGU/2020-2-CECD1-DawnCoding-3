@@ -52,7 +52,7 @@ public class DeviceController {
     }
 
     // 디바이스 선택시 알림용 tts
-    @GetMapping("/device/{deviceName}")
+    @GetMapping("/tts/device/{deviceName}")
     public ResponseEntity<Object> selectDevice(@PathVariable("deviceName") String deviceName) throws Exception {
         String sapiMessage = deviceName + "가 선택되었습니다";
         runSapi(sapiMessage);
