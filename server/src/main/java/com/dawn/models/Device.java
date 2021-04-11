@@ -1,19 +1,17 @@
 package com.dawn.models;
 
-import javassist.bytecode.stackmap.TypeData;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 @AllArgsConstructor
 @Entity
+@Getter
 @Data
 public class Device implements Serializable  {
 
@@ -53,6 +51,9 @@ public class Device implements Serializable  {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Status> statuses;
 
+    @OneToMany(mappedBy = "device")
+    private List<DeviceCycle> deviceCycles = new LinkedList<>();
+
     public static Device ofAnalog(String signalName, String deviceName, int lowerBound, int lowCriticalPoint,
                            int highBound, int highCriticalPoint, UnitType unitType, boolean tts) {
         return new Device(
@@ -60,6 +61,10 @@ public class Device implements Serializable  {
                 highBound, highCriticalPoint, unitType, true, tts);
     }
     public Device() {}
+
+    public Device(long deviceId) {
+        this.deviceId = deviceId;
+    }
 
     public Device(String signalName, String deviceName, int currentStatusCode,
                   String currentStatusTitle, List<Status> statuses, boolean tts) {

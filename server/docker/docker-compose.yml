@@ -1,4 +1,4 @@
-version: "3.3"
+version: "3.7"
 
 services:
   dawn_db_server:
@@ -16,7 +16,16 @@ services:
       - /opt/mysql_data:/var/lib/mysql
     ports:
       - 3307:3306
-
+  redis:
+    image: redis:6.0.5
+    command: redis-server --requirepass changeme --port 6379
+      container_name: redis6379
+      hostname: redis6379
+      labels:
+        - "name=redis"
+        - "mode=standalone"
+      ports:
+        - 6379:6379
 secrets:
   mysql_secret:
     file: mysql_secret

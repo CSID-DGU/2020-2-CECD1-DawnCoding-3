@@ -22,9 +22,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation group: 'com.opencsv', name: 'opencsv', version: '4.4'
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-redis
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '2.3.2.RELEASE'
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: '2.4.0'
     compileOnly 'org.projectlombok:lombok'
+    compile group: 'it.ozimov', name: 'embedded-redis', version: '0.7.2'
     runtime('com.h2database:h2')
     runtimeOnly 'mysql:mysql-connector-java'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

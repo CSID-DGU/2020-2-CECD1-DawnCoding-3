@@ -1,7 +1,5 @@
 package com.dawn.controller;
 
-import com.dawn.dto.DeviceDTO;
-import com.dawn.dto.StatusDTO;
 import com.dawn.models.Device;
 import com.dawn.models.Status;
 import com.dawn.models.UnitType;
@@ -9,15 +7,14 @@ import com.dawn.repository.DeviceRepository;
 import com.opencsv.CSVReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

@@ -3,10 +3,13 @@ package com.dawn.controller;
 import com.dawn.dto.DeviceDTO;
 import com.dawn.dto.StatusDTO;
 import com.dawn.models.Device;
+import com.dawn.models.RedisDeviceEvent;
 import com.dawn.models.Status;
 import com.dawn.repository.DeviceRepository;
+import com.dawn.service.DeviceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -23,6 +27,7 @@ public class DeviceController {
 
     private final DeviceRepository deviceRepository;
     private static final ClassPathResource sapiPath = new ClassPathResource("static/sapi.py");
+    private final RedisTemplate<String, Object> redisTemplate;
 
     // 디바이스 상태 변경
     @PutMapping("/tts/statusOrder/{deviceId}")
@@ -63,6 +68,9 @@ public class DeviceController {
     @PutMapping("/tts/device")
     public ResponseEntity<Object> triggerEventToDevice(@RequestBody DeviceDTO.Update device) throws Exception {
         Device deviceInDB = deviceRepository.findById(device.getDeviceId()).get();
+        RedisDeviceEvent redisDeviceEvent =
+                new RedisDeviceEvent(device.getDeviceId(), device.getCurrentStatusCode(), System.currentTimeMillis());
+        redisTemplate.opsForList().rightPush(DeviceService.EVENT_SEQ_LIST, redisDeviceEvent);
         if (deviceInDB.isAnalog()) {
             System.out.println("----------------------------------------");
             System.out.println(deviceInDB.isInDeadband());
