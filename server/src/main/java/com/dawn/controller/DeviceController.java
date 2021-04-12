@@ -1,10 +1,13 @@
 package com.dawn.controller;
 
+import com.dawn.dto.DeviceCycleDTO;
 import com.dawn.dto.DeviceDTO;
 import com.dawn.dto.StatusDTO;
 import com.dawn.models.Device;
+import com.dawn.models.DeviceCycle;
 import com.dawn.models.RedisDeviceEvent;
 import com.dawn.models.Status;
+import com.dawn.repository.DeviceCycleRepository;
 import com.dawn.repository.DeviceRepository;
 import com.dawn.service.DeviceService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 
 @Controller
@@ -26,6 +30,7 @@ import java.util.List;
 public class DeviceController {
 
     private final DeviceRepository deviceRepository;
+    private final DeviceCycleRepository deviceCycleRepository;
     private static final ClassPathResource sapiPath = new ClassPathResource("static/sapi.py");
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -55,6 +60,18 @@ public class DeviceController {
         List<Device> devices = deviceRepository.getAllDevices();
         return new ResponseEntity<>(devices, HttpStatus.OK);
     }
+
+    @GetMapping("/devices/excluded")
+    public ResponseEntity<List<DeviceCycleDTO.GetExcludedDeviceCycle>> getExcludedDevices() {
+        List<DeviceCycle> deviceCycles = deviceCycleRepository.findAll();
+        List<DeviceCycleDTO.GetExcludedDeviceCycle> result = new LinkedList<>();
+        deviceCycles.forEach(dc -> result.add(new DeviceCycleDTO.GetExcludedDeviceCycle(
+                dc.getId(), dc.getDevice().getDeviceId(), dc.getDevice().getSignalName(),
+                dc.getDevice().getDeviceName(), dc.getSequence(), dc.getThreshold(), dc.getExcludedAcc()
+        )));
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
 
     // 디바이스 선택시 알림용 tts
     @GetMapping("/tts/device/{deviceName}")

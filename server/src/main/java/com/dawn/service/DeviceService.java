@@ -61,7 +61,7 @@ public class DeviceService {
         } else {
             lastIndex = Integer.parseInt(lastIndexString);
         }
-        System.out.println("lastIndex = " + lastIndex);
+        //System.out.println("lastIndex = " + lastIndex);
         List<Object> list = redisTemplate.opsForList().range(EVENT_SEQ_LIST, 0, -1);
         if (list == null) list = new ArrayList<>();
         List<RedisDeviceEvent> eventList = new ArrayList<>();

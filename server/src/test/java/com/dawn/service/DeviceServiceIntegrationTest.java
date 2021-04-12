@@ -111,4 +111,5 @@ public class DeviceServiceIntegrationTest {
         assertThat("사이클이 제외된 횟수", NEW_DEVICE_CYCLE.getExcludedAcc(), equalTo(2));
     }
 
+    
 }
