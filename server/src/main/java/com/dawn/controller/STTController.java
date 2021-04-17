@@ -14,11 +14,14 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
 
+import java.sql.Timestamp;
+
+
 @Transactional
 @RestController
 @RequiredArgsConstructor
 public class STTController {
-    private static final ClassPathResource sttPath = new ClassPathResource("static/tmpcommand.py");
+    private static final ClassPathResource sttPath = new ClassPathResource("static/command.py");
     private final STTRepository sttRepository;
 
     @GetMapping("/stt")
@@ -31,9 +34,13 @@ public class STTController {
             System.out.println("python " + realPath);
 
             // 실제 STT 이후 처리하는 시간
-            Thread.sleep(2000);
-
+            System.out.println(System.currentTimeMillis());
             pc = rt.exec("python " + realPath);
+            // pc.getErrorStream().close();
+            // pc.getInputStream().close();
+            // pc.getOutputStream().close();
+            // pc.waitFor();
+            System.out.println(System.currentTimeMillis());
             BufferedReader br = new BufferedReader(new InputStreamReader(pc.getInputStream()));
             String line = null;
             String query = null;

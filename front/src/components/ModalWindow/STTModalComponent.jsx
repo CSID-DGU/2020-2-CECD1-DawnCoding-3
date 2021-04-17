@@ -83,7 +83,9 @@ function StatusModalComponent({ show, setShow }) {
           <>
             <h5>음성인식 가능 명령어 목록</h5>
             <ol>
-              <li>상태 디바이스 목록 알려줘</li>
+              <li>온도이상 장비 출력</li>
+              <li>정상 장비 출력</li>
+              <li>디지털 장비 상태 출력</li>
             </ol>
             <Button onClick={onClickStt}>음성 인식 시작</Button>
           </>
