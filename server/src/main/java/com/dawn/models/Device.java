@@ -1,11 +1,13 @@
 package com.dawn.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -49,9 +51,10 @@ public class Device implements Serializable  {
     private UnitType unitType;
 
     @OneToMany(cascade = CascadeType.ALL)
-    private List<Status> statuses;
+    private List<Status> statuses = new ArrayList<>();
 
     @OneToMany(mappedBy = "device")
+    @JsonIgnore
     private List<DeviceCycle> deviceCycles = new LinkedList<>();
 
     public static Device ofAnalog(String signalName, String deviceName, int lowerBound, int lowCriticalPoint,

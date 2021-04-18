@@ -124,7 +124,7 @@ function SensorGraphComponent() {
         sendData.push({
           createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${
             theDate.getMilliseconds() + 4 * i
-          }`,
+            }`,
           deviceId: theData.deviceId,
           currentStatusCode:
             (+originalData.currentStatusCode + i + 1) %
@@ -137,7 +137,7 @@ function SensorGraphComponent() {
     sendData.push({
       createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${
         theDate.getMilliseconds() + 4
-      }`,
+        }`,
       deviceId: theData.deviceId,
       currentStatusCode: selectedStatus.code,
       tts: originalData.tts,

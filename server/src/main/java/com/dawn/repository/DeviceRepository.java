@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface DeviceRepository extends JpaRepository<Device, Long> {
 
-    @Query("select d from Device d join fetch d.statuses s")
+    @Query("select d from Device d")
     public List<Device> getAllDevices();
 }
