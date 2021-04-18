@@ -51,6 +51,14 @@ th {
   height: 3rem;
   font-size: 1rem;
 }
+.thresholdBtn {
+  position: absolute;
+  top: 0;
+  right: 12rem;
+  width: 6rem;
+  height: 3rem;
+  font-size: 1rem;
+}
 .newEvent {
   position: absolute;
   top: 0;

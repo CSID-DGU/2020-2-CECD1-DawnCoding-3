@@ -5,6 +5,7 @@ import { Button, Form } from "react-bootstrap";
 import EventComponent from "./EventComponent";
 import SensorGraphComponent from "./SensorGraphComponent";
 import STTModalComponent from "./ModalWindow/STTModalComponent";
+import ThresholdModalComponent from "./ModalWindow/ThresholdModalComponent";
 import { v4 as uuid } from "uuid";
 import "./EventTableStyle.css";
 import { newEvents as newEventAction } from "../modules/newEvents";
@@ -24,6 +25,7 @@ function EventTableComponent() {
   const [watchMode, setWatchMode] = useState(false);
   const [ttsEnd, setTtsEnd] = useState(false);
   const [show, setShow] = useState(false);
+  const [threShow, setThreShow] = useState(false);
 
   // 아날로그 디바이스의 인덱스를 배열에 저장
   useEffect(() => {
@@ -138,7 +140,7 @@ function EventTableComponent() {
             const sendDataObject = {
               createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${
                 theDate.getMilliseconds() + 4 * i
-              }`,
+                }`,
               deviceId: theId,
               currValue: theLimit,
               tts: true,
@@ -217,7 +219,7 @@ function EventTableComponent() {
             const nextData = {
               createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${
                 theDate.getMilliseconds() + 4 * i
-              }`,
+                }`,
               deviceId: moreEventDevice.deviceId,
               currentStatusCode:
                 (moreEventDevice.currentStatusCode + 1) %
@@ -298,6 +300,15 @@ function EventTableComponent() {
         />
       </Form>
       <Button
+        className="thresholdBtn"
+        variant="warning"
+        onClick={() => {
+          setThreShow(true);
+        }}
+      >
+        Threshold
+      </Button>
+      <Button
         className="sttBtn"
         variant="primary"
         onClick={() => {
@@ -307,6 +318,7 @@ function EventTableComponent() {
         STT
       </Button>
       <STTModalComponent show={show} setShow={setShow} />
+      <ThresholdModalComponent show={threShow} setShow={setThreShow} />
       <Button className="stopBtn" variant="danger" onClick={onClickStopBtn}>
         멈춤
       </Button>
