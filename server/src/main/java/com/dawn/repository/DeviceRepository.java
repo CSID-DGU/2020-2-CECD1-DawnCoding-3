@@ -11,10 +11,6 @@ import java.util.List;
 @Repository
 public interface DeviceRepository extends JpaRepository<Device, Long> {
 
-    @Query("select distinct d from Device d join fetch d.statuses s")
-    public List<Device> getStatusDevices();
-
-    @EntityGraph(attributePaths = "statuses")
-    @Query("select d from Device d where d.currentStatusTitle is null")
-    public List<Device> getAnalogDevices();
+    @Query("select d from Device d left join fetch d.statuses s")
+    public List<Device> getAlldevices();
 }
