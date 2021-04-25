@@ -57,7 +57,11 @@ public class DeviceController {
     // 디바이스 전체 가져오기
     @GetMapping("/tts/devices")
     public ResponseEntity<List<Device>> getDevices() {
-        List<Device> devices = deviceRepository.getAllDevices();
+        List<Device> devices = deviceRepository.getStatusDevices();
+        List<Device> analogDevices = deviceRepository.getAnalogDevices();
+        for (Device analogDevice : analogDevices) {
+            devices.add(analogDevice);
+        }
         return new ResponseEntity<>(devices, HttpStatus.OK);
     }
 
