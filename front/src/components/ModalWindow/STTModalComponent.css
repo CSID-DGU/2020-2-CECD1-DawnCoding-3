@@ -35,3 +35,7 @@ ol {
 h6 {
   color : rgb(177, 25, 25);
 }
+.threshold-value:hover{
+  color :red;
+  cursor: pointer;
+}

@@ -16,6 +16,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
@@ -69,6 +70,27 @@ public class DeviceController {
                 dc.getId(), dc.getDevice().getDeviceId(), dc.getDevice().getSignalName(),
                 dc.getDevice().getDeviceName(), dc.getSequence(), dc.getThreshold(), dc.getExcludedAcc()
         )));
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    /**
+     *
+     * @param info : device_cycle 테이블의 id, threshold 값
+     * @return device_cycle 테이블의 변경된 row 데이터
+     */
+    @PutMapping("/devices/excluded")
+    @Transactional
+    public ResponseEntity<DeviceCycleDTO.GetExcludedDeviceCycle> ModifyExcludedDevices(@RequestBody DeviceCycleDTO.ChangeDeviceCycle info) {
+        DeviceCycle deviceCycle = deviceCycleRepository.findById(info.getId()).orElseThrow(() -> new RuntimeException("잘못된 정보"));
+        deviceCycle.setThreshold(info.getThreshold());
+        DeviceCycleDTO.GetExcludedDeviceCycle result = DeviceCycleDTO.GetExcludedDeviceCycle.builder().deviceId(deviceCycle.getId())
+                .excludedAcc(deviceCycle.getExcludedAcc())
+                .deviceName(deviceCycle.getDevice().getDeviceName())
+                .sequence(deviceCycle.getSequence())
+                .signalName(deviceCycle.getDevice().getSignalName())
+                .threshold(deviceCycle.getThreshold())
+                .id(deviceCycle.getId()).build();
+        System.out.println(result);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
