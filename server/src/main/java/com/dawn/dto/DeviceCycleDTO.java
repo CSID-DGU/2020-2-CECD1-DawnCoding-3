@@ -8,6 +8,7 @@ public class DeviceCycleDTO {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
+    @Builder
     @ToString
     public static class GetExcludedDeviceCycle {
         private long id;
@@ -17,6 +18,13 @@ public class DeviceCycleDTO {
         private String sequence;
         private int threshold;
         private int excludedAcc;
+    }
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChangeDeviceCycle {
+        private long id;
+        private int threshold;
     }
 }
