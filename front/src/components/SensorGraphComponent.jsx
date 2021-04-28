@@ -114,24 +114,6 @@ function SensorGraphComponent() {
       currentStatusCode: originalData.currentStatusCode,
       tts: originalData.tts,
     };
-    sendData.push(theData);
-
-    // 선택한 디바이스의 상태가 변경될 때 거치는 상태들 추가
-    const moreEventsNumber = 2 + Math.floor(Math.random() * 2);
-    Array(moreEventsNumber)
-      .fill()
-      .forEach((v, i) => {
-        sendData.push({
-          createDate: `${theDate.getFullYear()}-${theDate.getMonth()}-${theDate.getDate()} ${theDate.getHours()}:${theDate.getMinutes()}:${theDate.getSeconds()}.${
-            theDate.getMilliseconds() + 4 * i
-            }`,
-          deviceId: theData.deviceId,
-          currentStatusCode:
-            (+originalData.currentStatusCode + i + 1) %
-            Object.entries(originalData.statuses).length,
-          tts: originalData.tts,
-        });
-      });
 
     // 최종적으로 선택한 상태로 변경
     sendData.push({
