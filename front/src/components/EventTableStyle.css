@@ -34,7 +34,21 @@ th {
   align-items: center;
   justify-content: center;
 }
-
+.choiceAnalog {
+  position: absolute;
+  top: 0;
+  left: 8rem;
+  width: 10rem;
+  height: 3rem;
+  font-size: 1rem;
+  color: rgb(255, 255, 255);
+  border: 1px solid #ffc107;
+  background-color: #e41e59;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .stopBtn {
   position: absolute;
   top: 0;
