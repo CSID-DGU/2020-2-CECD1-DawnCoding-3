@@ -113,4 +113,10 @@ public class Device implements Serializable  {
         return !(newValue >= device.getHighCriticalPoint() || newValue <= device.getLowCriticalPoint());
     }
 
+    @Override
+    public String toString() {
+        return String.format("[Device] deviceId - %s, deviceName - %s, signalName - %s",
+                this.getDeviceId(), this.getDeviceName(), this.getSignalName());
+    }
+
 }

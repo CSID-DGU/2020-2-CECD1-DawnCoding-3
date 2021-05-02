@@ -2,10 +2,8 @@ package com.dawn.service;
 
 import com.dawn.controller.DeviceController;
 import com.dawn.dto.DeviceDTO;
-import com.dawn.models.Device;
-import com.dawn.models.DeviceCycle;
-import com.dawn.models.RedisDeviceEvent;
-import com.dawn.models.Status;
+import com.dawn.models.*;
+import com.dawn.repository.DeviceCycleIntervalLogRepository;
 import com.dawn.repository.DeviceCycleRepository;
 import com.dawn.repository.DeviceRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -41,6 +39,9 @@ public class DeviceServiceIntegrationTest {
 
     @Autowired
     private DeviceCycleRepository deviceCycleRepository;
+
+    @Autowired
+    private DeviceCycleIntervalLogRepository deviceCycleIntervalLogRepository;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -109,6 +110,31 @@ public class DeviceServiceIntegrationTest {
         List<DeviceCycle> deviceCycle = deviceCycleRepository.findAll();
         DeviceCycle NEW_DEVICE_CYCLE = deviceCycle.get(0);
         assertThat("사이클이 제외된 횟수", NEW_DEVICE_CYCLE.getExcludedAcc(), equalTo(2));
+    }
+
+    @Test
+    public void regulateThresholdJob은_threshold를_수정한다() {
+        Device device = new Device("TEST$1234", "TEST DEVICE", 0,
+                "열림", Arrays.asList(new Status(0, "열림", 0), new Status(1, "닫힘", 1), new Status(2, "가동", 2)),
+                true);
+        Device newDevice = deviceRepository.save(device);
+        DeviceCycle deviceCycle = new DeviceCycle(newDevice, "012");
+        deviceCycle = deviceCycleRepository.save(deviceCycle);
+        String SEQ = "012";
+        List<DeviceCycleIntervalLog> logs = Arrays.asList(
+                new DeviceCycleIntervalLog(SEQ, 100),
+                new DeviceCycleIntervalLog(SEQ, 200),
+                new DeviceCycleIntervalLog(SEQ, 250),
+                new DeviceCycleIntervalLog(SEQ, 1000),
+                new DeviceCycleIntervalLog(SEQ, 2500),
+                new DeviceCycleIntervalLog(SEQ, 3000),
+                new DeviceCycleIntervalLog(SEQ, 90000),
+                new DeviceCycleIntervalLog(SEQ, 100000)
+        );
+        deviceCycleIntervalLogRepository.saveAll(logs);
+        deviceService.regulateThresholdJob();
+        deviceCycle = deviceCycleRepository.findById(deviceCycle.getId()).get();
+        assertThat(deviceCycle.getThreshold(), is(0));
     }
 
     

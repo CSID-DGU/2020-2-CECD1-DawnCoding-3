@@ -11,6 +11,8 @@ import com.dawn.repository.DeviceCycleRepository;
 import com.dawn.repository.DeviceRepository;
 import com.dawn.service.DeviceService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -30,10 +32,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DeviceController {
 
+    private static final ClassPathResource sapiPath = new ClassPathResource("static/sapi.py");
+    private static final Logger logger = LoggerFactory.getLogger(DeviceController.class);
+
     private final DeviceRepository deviceRepository;
     private final DeviceCycleRepository deviceCycleRepository;
-    private static final ClassPathResource sapiPath = new ClassPathResource("static/sapi.py");
     private final RedisTemplate<String, Object> redisTemplate;
+    private final DeviceService deviceService;
 
     // 디바이스 상태 변경
     @PutMapping("/tts/statusOrder/{deviceId}")
@@ -41,7 +46,9 @@ public class DeviceController {
         deviceRepository.findById(deviceId).ifPresent(theDevice -> {
             List<Status> originalStatus = theDevice.getStatuses();
             for(int i = 0 ; i < orderList.getOrderList().size(); i++){
-                originalStatus.get(i).setStatus_order(orderList.getOrderList().get(i));
+                int currOrder = orderList.getOrderList().get(i);
+                logger.info(String.format("%s : 의 상태를 "));
+                originalStatus.get(i).setStatus_order(currOrder);
             }
             deviceRepository.save(theDevice);
         });
@@ -109,7 +116,19 @@ public class DeviceController {
         Device deviceInDB = deviceRepository.findById(device.getDeviceId()).get();
         RedisDeviceEvent redisDeviceEvent =
                 new RedisDeviceEvent(device.getDeviceId(), device.getCurrentStatusCode(), System.currentTimeMillis());
+        long llen = redisTemplate.opsForList().size(DeviceService.EVENT_SEQ_LIST);
+        int len = (int) llen;
         redisTemplate.opsForList().rightPush(DeviceService.EVENT_SEQ_LIST, redisDeviceEvent);
+        List<Object> list = redisTemplate.opsForList().range(DeviceService.EVENT_SEQ_LIST, 0, -1);
+        assert list != null;
+        list.forEach(elem -> {
+            RedisDeviceEvent currEvent = (RedisDeviceEvent) elem;
+            System.out.print(currEvent.getDeviceId() + "-" + currEvent.getStatus() + " ");
+        });
+        System.out.println();
+        deviceService.applyEvent(new RedisDeviceEvent(
+                device.getDeviceId(), device.getCurrentStatusCode(), System.currentTimeMillis()),
+                len);
         if (deviceInDB.isAnalog()) {
             System.out.println("----------------------------------------");
             System.out.println(deviceInDB.isInDeadband());

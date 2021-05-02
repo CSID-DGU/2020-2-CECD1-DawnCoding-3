@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DeviceCycleRepository extends JpaRepository<DeviceCycle, Long> {
 
-    public DeviceCycle getDeviceCycleBySequence(String sequence);
+    public DeviceCycle getDeviceCycleByDeviceAndAndSequence(Device device, String sequence);
 }

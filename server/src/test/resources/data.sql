@@ -56,6 +56,13 @@ INSERT INTO `device` (`device_id`,`analog`,`curr_value`,`current_status_code`,`c
 INSERT INTO `device` (`device_id`,`analog`,`curr_value`,`current_status_code`,`current_status_title`,`device_name`,`high_bound`,`high_critical_point`,`in_deadband`,`low_critical_point`,`lower_bound`,`signal_name`,`tts`,`unit_type`) VALUES (56,1,0,0,NULL,'UVD CHICKEN',100,80,0,20,0,'ACP$at$AA$9',1,2);
 INSERT INTO `device` (`device_id`,`analog`,`curr_value`,`current_status_code`,`current_status_title`,`device_name`,`high_bound`,`high_critical_point`,`in_deadband`,`low_critical_point`,`lower_bound`,`signal_name`,`tts`,`unit_type`) VALUES (57,1,0,0,NULL,'UVD CHICKEN',100,80,0,20,0,'ACP$at$AA$10',1,2);
 
+INSERT INTO `device_cycle` (`id`, `excluded_acc`, `sequence`, `threshold`, `device_device_id`) VALUES (0, 10, '01', 1000, 1);
+INSERT INTO `device_cycle` (`id`, `excluded_acc`, `sequence`, `threshold`, `device_device_id`) VALUES (1, 34, '0123', 1000, 1);
+INSERT INTO `device_cycle` (`id`, `excluded_acc`, `sequence`, `threshold`, `device_device_id`) VALUES (2, 158, '234', 1000, 1);
+INSERT INTO `device_cycle` (`id`, `excluded_acc`, `sequence`, `threshold`, `device_device_id`) VALUES (3, 10, '12', 1000, 2);
+INSERT INTO `device_cycle` (`id`, `excluded_acc`, `sequence`, `threshold`, `device_device_id`) VALUES (4, 34, '231', 1000, 2);
+INSERT INTO `device_cycle` (`id`, `excluded_acc`, `sequence`, `threshold`, `device_device_id`) VALUES (5, 158, '41', 1000, 2);
+
 INSERT INTO `status` (`status_id`,`status_key`,`status_name`,`status_order`) VALUES (1,0,'정상',1);
 INSERT INTO `status` (`status_id`,`status_key`,`status_name`,`status_order`) VALUES (2,1,'이상',2);
 INSERT INTO `status` (`status_id`,`status_key`,`status_name`,`status_order`) VALUES (3,0,'열림',1);

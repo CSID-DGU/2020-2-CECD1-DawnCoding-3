@@ -1,6 +1,7 @@
 package com.dawn.service;
 
 import com.dawn.models.*;
+import com.dawn.repository.DeviceCycleIntervalLogRepository;
 import com.dawn.repository.DeviceCycleRepository;
 import com.dawn.repository.DeviceRepository;
 import lombok.AllArgsConstructor;
@@ -9,10 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +25,8 @@ public class DeviceService {
     private final DeviceRepository deviceRepository;
 
     private final DeviceCycleRepository deviceCycleRepository;
+
+    private final DeviceCycleIntervalLogRepository deviceCycleIntervalLogRepository;
 
     Map<String, Integer> signalEventIndexMap = new HashMap<>();
 
@@ -50,7 +50,6 @@ public class DeviceService {
         4. 트리거 타임이 쓰레시 홀드 인터벌보다 길 경우 TTS를 출력한다
         5.
      */
-    @Scheduled(fixedRate = 500)
     public int ttsExecutor() {
         signalEventIndexMap = new HashMap<>();
         signalEventSequenceMap = new HashMap<>();
@@ -73,10 +72,54 @@ public class DeviceService {
                     String.valueOf(x.getDeviceId()) +
                                     '-' +
                                     x.getStatus();
-
-
         });
         return list.size();
+    }
+
+    public double getStandardVariant(List<Double> data, double avg) {
+        double dev = 0.0;
+        double devSqvSum = 0;
+        double var;
+
+        for (int i=0; i < data.size(); i++) {
+            double curr = data.get(i);
+            dev = curr - avg;
+            devSqvSum += Math.pow(dev, 2);
+        }
+        var = devSqvSum / data.size();
+        return Math.sqrt(var);
+    }
+
+    public double getLeftConfidenceInterval(int size, double avg, double std) {
+        return avg - 1.96 * (std / Math.sqrt(size));
+    }
+
+    @Scheduled(fixedRate = 10000)
+    public void regulateThresholdJob() {
+        List<DeviceCycle> cycles = deviceCycleRepository.findAll();
+        cycles.forEach(cycle -> {
+            double acc = 0;
+            List<Double> intervals = new LinkedList<>();
+            List<DeviceCycleIntervalLog> logs =
+                    deviceCycleIntervalLogRepository.findByDeviceAndSequence(
+                            cycle.getDevice(), cycle.getSequence());
+            int logSize = logs.size();
+            if (logSize != 0) {
+                for (int i=0; i < logs.size(); i++) {
+                    DeviceCycleIntervalLog log = logs.get(i);
+                    double currThreshold = Math.log10((double)log.getThreshold());
+                    acc += currThreshold;
+                    intervals.add(currThreshold);
+                }
+
+                double avg = acc / logSize;
+                double std = getStandardVariant(intervals, avg);
+                double newThreshold = getLeftConfidenceInterval(logSize, avg, std);
+                int poweredThreshold = (int) Math.pow(10, newThreshold);
+                cycle.setThreshold(poweredThreshold);
+                deviceCycleRepository.save(cycle);
+            }
+        });
     }
 
     @AllArgsConstructor
@@ -84,7 +127,6 @@ public class DeviceService {
         private int index;
         private int status;
     }
-
 
     public boolean applyEvent(RedisDeviceEvent event, int index) {
         //signalEventIndexMap.put(event.getDeviceId(), index);
@@ -112,20 +154,25 @@ public class DeviceService {
 
         String createdSequence = createdSequenceBuilder.toString();
         // 마지막 이벤트 기준의 시간측정
-        long lastTriggeredTimeOfSequence = lastTriggeredMem.computeIfAbsent(createdSequence, (k) -> (long) -1);
-        DeviceCycle existingDeviceCycle = deviceCycleRepository.getDeviceCycleBySequence(createdSequence);
+        long lastTriggeredTimeOfSequence = lastTriggeredMem.computeIfAbsent(createdSequence, (k) -> (long) event.getTriggeredAt() + 1000);
+        long interval = event.getTriggeredAt() - lastTriggeredTimeOfSequence;
+        DeviceCycle existingDeviceCycle =
+                deviceCycleRepository.getDeviceCycleByDeviceAndAndSequence(
+                        new Device(event.getDeviceId()), createdSequence);
         if (existingDeviceCycle == null) {
             Device currDevice  = deviceRepository.findById(event.getDeviceId()).get();
             deviceCycleRepository.save(new DeviceCycle(currDevice, createdSequence));
         } else {
-            if (event.getTriggeredAt() - lastTriggeredTimeOfSequence <= existingDeviceCycle.getThreshold()) {
+            if (interval <= existingDeviceCycle.getThreshold()) {
                 sequenceMap.put(event.getDeviceId(), null);
                 existingDeviceCycle.setExcludedAcc(existingDeviceCycle.getExcludedAcc() + 1);
                 //savedSequence.forEach(e -> eventArray[e.index] = null);
                 savedSequence.forEach(e -> eventList.set(e.index, null));
             }
+            DeviceCycleIntervalLog log =
+                    new DeviceCycleIntervalLog(createdSequence, existingDeviceCycle.getDevice(), interval);
+            deviceCycleIntervalLogRepository.save(log);
         }
-
         lastTriggeredMem.put(createdSequence, event.getTriggeredAt());
         List<Event> splicedList = new ArrayList<>();
         splicedList.add(currEvent);

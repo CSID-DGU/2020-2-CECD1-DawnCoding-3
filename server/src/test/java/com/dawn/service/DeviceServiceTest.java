@@ -3,6 +3,7 @@ package com.dawn.service;
 import com.dawn.models.Device;
 import com.dawn.models.DeviceCycle;
 import com.dawn.models.RedisDeviceEvent;
+import com.dawn.repository.DeviceCycleIntervalLogRepository;
 import com.dawn.repository.DeviceCycleRepository;
 import com.dawn.repository.DeviceRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +41,8 @@ public class DeviceServiceTest {
     @Mock
     private DeviceCycleRepository deviceCycleRepository;
 
+    private DeviceCycleIntervalLogRepository deviceCycleIntervalLogRepository;
+
     @Mock
     private ValueOperations valueOperations;
 
@@ -64,7 +67,7 @@ public class DeviceServiceTest {
         given(mockRedisTemplate.opsForList()).willReturn(listOperations);
         given(mockRedisTemplate.opsForValue().get(DeviceService.LAST_INDEX)).willReturn("0");
 
-        DeviceService deviceService = new DeviceService(mockRedisTemplate, deviceRepository, deviceCycleRepository);
+        DeviceService deviceService = new DeviceService(mockRedisTemplate, deviceRepository, deviceCycleRepository, device);
         RedisDeviceEvent device1 = new RedisDeviceEvent(0 ,0, System.currentTimeMillis());
         RedisDeviceEvent device2 = new RedisDeviceEvent(1 ,0, System.currentTimeMillis());
         List<Object> deviceLists = Arrays.asList(device1, device2);
@@ -83,7 +86,7 @@ public class DeviceServiceTest {
                 .willReturn(null)
                 .willReturn(new DeviceCycle(mockDevice, "0120"));
         when(deviceCycleRepository.save(any())).then(AdditionalAnswers.returnsFirstArg());
-        DeviceService deviceService = new DeviceService(mockRedisTemplate, deviceRepository, deviceCycleRepository);
+        DeviceService deviceService = new DeviceService(mockRedisTemplate, deviceRepository, deviceCycleRepository, device);
         List<Object> eventList = Arrays.asList(
                 new RedisDeviceEvent(0 ,0, System.currentTimeMillis()),
                 new RedisDeviceEvent(0 ,1, System.currentTimeMillis()),
@@ -113,7 +116,7 @@ public class DeviceServiceTest {
         given(deviceCycleRepository.getDeviceCycleBySequence(anyString()))
                 .willReturn(null)
                 .willReturn(new DeviceCycle(mockDevice, "0120"));
-        DeviceService deviceService = new DeviceService(mockRedisTemplate, deviceRepository, deviceCycleRepository);
+        DeviceService deviceService = new DeviceService(mockRedisTemplate, deviceRepository, deviceCycleRepository, device);
         List<Object> eventList = Arrays.asList(
                 new RedisDeviceEvent(0 ,0, System.currentTimeMillis()),
                 new RedisDeviceEvent(0 ,1, System.currentTimeMillis()),
@@ -145,7 +148,7 @@ public class DeviceServiceTest {
         given(deviceCycleRepository.getDeviceCycleBySequence(anyString()))
                 .willReturn(null)
                 .willReturn(new DeviceCycle(mockDevice, "0120"));
-        DeviceService deviceService = new DeviceService(mockRedisTemplate, deviceRepository, deviceCycleRepository);
+        DeviceService deviceService = new DeviceService(mockRedisTemplate, deviceRepository, deviceCycleRepository, device);
         List<Object> eventList = Arrays.asList(
                 new RedisDeviceEvent(0 ,0, System.currentTimeMillis()),
                 new RedisDeviceEvent(0 ,1, System.currentTimeMillis()),
@@ -172,7 +175,7 @@ public class DeviceServiceTest {
         given(deviceCycleRepository.getDeviceCycleBySequence(anyString()))
                 .willReturn(null)
                 .willReturn(new DeviceCycle(mockDevice, "0120"));
-        DeviceService deviceService = new DeviceService(mockRedisTemplate, deviceRepository, deviceCycleRepository);
+        DeviceService deviceService = new DeviceService(mockRedisTemplate, deviceRepository, deviceCycleRepository, device);
         RedisDeviceEvent de1 = new RedisDeviceEvent(0, 0, System.currentTimeMillis());
         RedisDeviceEvent de2 = new RedisDeviceEvent(0, 1, System.currentTimeMillis());
         RedisDeviceEvent de3 = new RedisDeviceEvent(0, 2, System.currentTimeMillis());
@@ -185,7 +188,7 @@ public class DeviceServiceTest {
 
     @Test
     public void applyEvent_NOT_DETECT_CYCLE_WHEN_CYCLE_NOT_CREATED() {
-        DeviceService deviceService = new DeviceService(mockRedisTemplate, deviceRepository, deviceCycleRepository);
+        DeviceService deviceService = new DeviceService(mockRedisTemplate, deviceRepository, deviceCycleRepository, device);
         RedisDeviceEvent de1 = new RedisDeviceEvent(0, 0, System.currentTimeMillis());
         RedisDeviceEvent de2 = new RedisDeviceEvent(0, 1, System.currentTimeMillis());
         RedisDeviceEvent de3 = new RedisDeviceEvent(0, 2, System.currentTimeMillis());
@@ -204,7 +207,7 @@ public class DeviceServiceTest {
         given(deviceCycleRepository.getDeviceCycleBySequence(anyString()))
                 .willReturn(null)
                 .willReturn(new DeviceCycle(mockDevice, "0120"));
-        DeviceService deviceService = new DeviceService(mockRedisTemplate, deviceRepository, deviceCycleRepository);
+        DeviceService deviceService = new DeviceService(mockRedisTemplate, deviceRepository, deviceCycleRepository, device);
         RedisDeviceEvent de1 = new RedisDeviceEvent(0, 0, System.currentTimeMillis());
         RedisDeviceEvent de2 = new RedisDeviceEvent(0, 1, System.currentTimeMillis());
         RedisDeviceEvent de3 = new RedisDeviceEvent(0, 2, System.currentTimeMillis());
