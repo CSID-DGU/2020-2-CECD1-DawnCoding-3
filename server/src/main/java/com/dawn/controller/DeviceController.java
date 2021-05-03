@@ -45,7 +45,7 @@ public class DeviceController {
     public ResponseEntity updateOrder(@PathVariable Long deviceId, @RequestBody StatusDTO.Update orderList) throws IOException {
         deviceRepository.findById(deviceId).ifPresent(theDevice -> {
             List<Status> originalStatus = theDevice.getStatuses();
-            for(int i = 0 ; i < orderList.getOrderList().size(); i++){
+            for (int i = 0; i < orderList.getOrderList().size(); i++) {
                 int currOrder = orderList.getOrderList().get(i);
                 logger.info(String.format("%s : 의 상태를 "));
                 originalStatus.get(i).setStatus_order(currOrder);
@@ -73,6 +73,21 @@ public class DeviceController {
     public ResponseEntity<List<DeviceCycleDTO.GetExcludedDeviceCycle>> getExcludedDevices() {
         List<DeviceCycle> deviceCycles = deviceCycleRepository.findAll();
         List<DeviceCycleDTO.GetExcludedDeviceCycle> result = new LinkedList<>();
+        deviceCycles.forEach(dc -> {
+            if (dc.getExcludedAcc() > 0) {
+                result.add(new DeviceCycleDTO.GetExcludedDeviceCycle(
+                        dc.getId(), dc.getDevice().getDeviceId(), dc.getDevice().getSignalName(),
+                        dc.getDevice().getDeviceName(), dc.getSequence(), dc.getThreshold(), dc.getExcludedAcc()
+                ));
+            }
+        });
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/devices/cycles")
+    public ResponseEntity<List<DeviceCycleDTO.GetExcludedDeviceCycle>> getAllDeviceCycle() {
+        List<DeviceCycle> deviceCycles = deviceCycleRepository.findAll();
+        List<DeviceCycleDTO.GetExcludedDeviceCycle> result = new LinkedList<>();
         deviceCycles.forEach(dc -> result.add(new DeviceCycleDTO.GetExcludedDeviceCycle(
                 dc.getId(), dc.getDevice().getDeviceId(), dc.getDevice().getSignalName(),
                 dc.getDevice().getDeviceName(), dc.getSequence(), dc.getThreshold(), dc.getExcludedAcc()
@@ -80,8 +95,8 @@ public class DeviceController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+
     /**
-     *
      * @param info : device_cycle 테이블의 id, threshold 값
      * @return device_cycle 테이블의 변경된 row 데이터
      */
@@ -98,6 +113,7 @@ public class DeviceController {
                 .threshold(deviceCycle.getThreshold())
                 .id(deviceCycle.getId()).build();
         System.out.println(result);
+        deviceCycleRepository.save(deviceCycle);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -127,7 +143,7 @@ public class DeviceController {
         });
         System.out.println();
         deviceService.applyEvent(new RedisDeviceEvent(
-                device.getDeviceId(), device.getCurrentStatusCode(), System.currentTimeMillis()),
+                        device.getDeviceId(), device.getCurrentStatusCode(), System.currentTimeMillis()),
                 len);
         if (deviceInDB.isAnalog()) {
             System.out.println("----------------------------------------");
