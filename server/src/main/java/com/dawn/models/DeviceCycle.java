@@ -26,7 +26,7 @@ public class DeviceCycle {
     public DeviceCycle(Device device, String sequence) {
         this.device = device;
         this.sequence = sequence;
-        this.threshold = 1000;
+        this.threshold = 10000;
         this.excludedAcc = 0;
     }
 }

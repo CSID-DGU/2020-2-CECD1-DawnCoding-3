@@ -38,7 +38,6 @@ public class DeviceService {
 
     Map<String, Long> lastTriggeredMem = new HashMap<>();
 
-
     public RedisDeviceEvent[] eventArray;
 
     public ArrayList<RedisDeviceEvent> eventList = new ArrayList<>();
@@ -140,7 +139,7 @@ public class DeviceService {
             signalEventIndexMap.put(signalEventKey, index);
             savedSequence.add(currEvent);
             sequenceMap.put(event.getDeviceId(), savedSequence);
-            return false;
+            return true;
         }
 
         final StringBuilder createdSequenceBuilder = new StringBuilder();
@@ -154,29 +153,33 @@ public class DeviceService {
 
         String createdSequence = createdSequenceBuilder.toString();
         // 마지막 이벤트 기준의 시간측정
-        long lastTriggeredTimeOfSequence = lastTriggeredMem.computeIfAbsent(createdSequence, (k) -> (long) event.getTriggeredAt() + 1000);
+        long lastTriggeredTimeOfSequence = lastTriggeredMem.computeIfAbsent(createdSequence, (k) -> (long) event.getTriggeredAt() + 10000);
         long interval = event.getTriggeredAt() - lastTriggeredTimeOfSequence;
+        boolean isTTSExcluded = false;
         DeviceCycle existingDeviceCycle =
                 deviceCycleRepository.getDeviceCycleByDeviceAndAndSequence(
                         new Device(event.getDeviceId()), createdSequence);
         if (existingDeviceCycle == null) {
-            Device currDevice  = deviceRepository.findById(event.getDeviceId()).get();
+            Device currDevice = deviceRepository.findById(event.getDeviceId()).get();
             deviceCycleRepository.save(new DeviceCycle(currDevice, createdSequence));
         } else {
+            DeviceCycleIntervalLog log =
+                    new DeviceCycleIntervalLog(createdSequence, existingDeviceCycle.getDevice(), interval);
+            deviceCycleIntervalLogRepository.save(log);
             if (interval <= existingDeviceCycle.getThreshold()) {
+                isTTSExcluded = true;
                 sequenceMap.put(event.getDeviceId(), null);
                 existingDeviceCycle.setExcludedAcc(existingDeviceCycle.getExcludedAcc() + 1);
                 //savedSequence.forEach(e -> eventArray[e.index] = null);
                 savedSequence.forEach(e -> eventList.set(e.index, null));
             }
-            DeviceCycleIntervalLog log =
-                    new DeviceCycleIntervalLog(createdSequence, existingDeviceCycle.getDevice(), interval);
-            deviceCycleIntervalLogRepository.save(log);
         }
         lastTriggeredMem.put(createdSequence, event.getTriggeredAt());
         List<Event> splicedList = new ArrayList<>();
         splicedList.add(currEvent);
         sequenceMap.put(event.getDeviceId(), splicedList);
-        return true;
+        if (existingDeviceCycle != null) deviceCycleRepository.save(existingDeviceCycle);
+
+        return !isTTSExcluded;
     }
 }

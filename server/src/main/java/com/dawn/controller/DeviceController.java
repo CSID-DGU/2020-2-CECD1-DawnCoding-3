@@ -117,7 +117,6 @@ public class DeviceController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-
     // 디바이스 선택시 알림용 tts
     @GetMapping("/tts/device/{deviceName}")
     public ResponseEntity<Object> selectDevice(@PathVariable("deviceName") String deviceName) throws Exception {
@@ -142,9 +141,11 @@ public class DeviceController {
             System.out.print(currEvent.getDeviceId() + "-" + currEvent.getStatus() + " ");
         });
         System.out.println();
-        deviceService.applyEvent(new RedisDeviceEvent(
-                        device.getDeviceId(), device.getCurrentStatusCode(), System.currentTimeMillis()),
-                len);
+        RedisDeviceEvent newEvent = new RedisDeviceEvent(
+                device.getDeviceId(), device.getCurrentStatusCode(), System.currentTimeMillis());
+        boolean tts = deviceService.applyEvent(newEvent, len);
+        if (!tts) return null;
+
         if (deviceInDB.isAnalog()) {
             System.out.println("----------------------------------------");
             System.out.println(deviceInDB.isInDeadband());
@@ -163,12 +164,12 @@ public class DeviceController {
                     ttsMessage = deviceInDB.getDeviceName() + "의 계측값이 " + device.getCurrValue() + "으로 하한치를 초과하였습니다";
                 }
                 deviceInDB.setInDeadband(true);
-//                runSapi(ttsMessage);
+                runSapi(ttsMessage);
 
             } else if (deviceInDB.isInDeadband() && Device.isSafeZone(deviceInDB, device.getCurrValue())) {
                 String ttsMessage = deviceInDB.getDeviceName() + "의 계측값이 " + device.getCurrValue() + "정상치로 복귀했습니다";
                 deviceInDB.setInDeadband(false);
-//                runSapi(ttsMessage);
+                runSapi(ttsMessage);
             }
         } else {
             try {
@@ -176,7 +177,7 @@ public class DeviceController {
                 deviceInDB.setCurrentStatusCode(device.getCurrentStatusCode());
                 deviceInDB.setCurrentStatusTitle(deviceInDB.getStatuses().get(device.getCurrentStatusCode()).getStatus_name());
                 deviceRepository.save(deviceInDB);
-//                runSapi(ttsMessage);
+                runSapi(ttsMessage);
             } catch (Exception e) {
                 e.printStackTrace();
                 return new ResponseEntity<>("예외가 발생했습니다: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
