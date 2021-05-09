@@ -26,6 +26,7 @@ function StatusModalComponent({ show, setShow }) {
 
   const onClickCancel = () => {
     setShow(false);
+    setThresholdResult([]);
     setOverMode(true);
   };
   const onClickThreshold = async (id) => {
